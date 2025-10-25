@@ -11,6 +11,7 @@ config_version=5
 [application]
 
 config/name="ClickerStartup"
+run/main_scene="uid://h4sc1spmei8p"
 config/features=PackedStringArray("4.5", "Forward Plus")
 config/icon="res://icon.svg"
 
