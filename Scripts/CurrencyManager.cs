@@ -1,6 +1,4 @@
 using System;
-using System.ComponentModel.DataAnnotations;
-using System.Numerics;
 
 public class CurrencyManager
 {
@@ -8,7 +6,7 @@ public class CurrencyManager
     public double Money { get; private set; } = 0.0;
     public double LinesOfCode { get; private set; } = 0.0;
     public double IncomePerSecond { get; private set; } = 0.0;
-    public int ClickPower { get; set; } = 1
+    public int ClickPower { get; set; } = 1;
 
     // === ACTIONS ===
     public void AddOnClick()

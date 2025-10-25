@@ -1,7 +1,6 @@
 using Godot;
 using System;
-using System.Reflection.Emit;
-using System.Reflection.Metadata;
+using Label = Godot.Label;
 
 public partial class Game : Control
 {
@@ -32,15 +31,15 @@ public partial class Game : Control
         _locLabel = GetNode<Label>("HUD/CurrencyHUD/LocLabel");
         _incomeLabel = GetNode<Label>("HUD/CurrencyHUD/IncomeLabel");
 
-        _writeCodeButton = GetNode<Label>("ActionsPanel/WriteCodeButton");
-        _buyClickPowerButton = GetNode<Label>("ActionsPanel/BuyClickPowerButton");
+        _writeCodeButton = GetNode<Button>("ActionsPanel/WriteCodeButton");
+        _buyClickPowerButton = GetNode<Button>("ActionsPanel/BuyClickPowerButton");
 
         _passiveTick = GetNode<Timer>("PassiveTick");
         _autosave = GetNode<Timer>("Autosave");
 
         // Wire UI events
         _writeCodeButton.Pressed += OnWriteCodePressed;
-        _buyClickPowerButton += OnBuyClickPowerPressed;
+        _buyClickPowerButton.Pressed += OnBuyClickPowerPressed;
 
         // Wire timers
         _passiveTick.Timeout += OnPassiveTick;
