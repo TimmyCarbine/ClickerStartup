@@ -28,13 +28,13 @@ public partial class Game : Control
     public override void _Ready()
     {
         // Find nodes by their scene paths
-        _moneyLabel = GetNode<Label>("HUD/CurrencyHUD/MoneyLabel");
-        _locLabel = GetNode<Label>("HUD/CurrencyHUD/LocLabel");
-        _incomeLabel = GetNode<Label>("HUD/CurrencyHUD/IncomeLabel");
+        _moneyLabel = GetNode<Label>("RootMargin/RootVBox/HUD/CurrencyHUD/MoneyLabel");
+        _locLabel = GetNode<Label>("RootMargin/RootVBox/HUD/CurrencyHUD/LocLabel");
+        _incomeLabel = GetNode<Label>("RootMargin/RootVBox/HUD/CurrencyHUD/IncomeLabel");
 
-        _writeCodeButton = GetNode<Button>("ActionsPanel/WriteCodeButton");
-        _buyClickPowerButton = GetNode<Button>("ActionsPanel/BuyClickPowerButton");
-        _hireJuniorDevButton = GetNode<Button>("ActionsPanel/HireJuniorDevButton");
+        _writeCodeButton = GetNode<Button>("RootMargin/RootVBox/BodyHBox/ActionsPanel/WriteCodeButton");
+        _buyClickPowerButton = GetNode<Button>("RootMargin/RootVBox/BodyHBox/ActionsPanel/BuyClickPowerButton");
+        _hireJuniorDevButton = GetNode<Button>("RootMargin/RootVBox/BodyHBox/ActionsPanel/HireJuniorDevButton");
 
         _passiveTick = GetNode<Timer>("PassiveTick");
         _autosave = GetNode<Timer>("Autosave");

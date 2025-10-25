@@ -12,9 +12,20 @@ config_version=5
 
 config/name="ClickerStartup"
 run/main_scene="uid://h4sc1spmei8p"
-config/features=PackedStringArray("4.5", "Forward Plus")
+config/features=PackedStringArray("4.5", "C#", "Forward Plus")
 config/icon="res://icon.svg"
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/stretch/mode="canvas_items"
 
 [dotnet]
 
 project/assembly_name="ClickerStartup"
+
+[gui]
+
+theme/custom="uid://dv8xkdlo703ld"
+theme/custom_font="uid://baotaxl646i34"
