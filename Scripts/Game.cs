@@ -59,7 +59,7 @@ public partial class Game : Control
         _autosave.WaitTime = AUTOSAVE_INTERVAL_SEC;
 
         // Save on quit
-        GetTree().TreeExiting += OnTreeExiting;
+        TreeExiting += OnTreeExiting;
     }
 
     private void OnWriteCodePressed()
