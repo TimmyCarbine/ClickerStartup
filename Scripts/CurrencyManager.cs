@@ -17,6 +17,12 @@ public class CurrencyManager
         ClampNegatives();
     }
 
+    public void AddIncomePerSecond(double amount)
+    {
+        IncomePerSecond += amount;
+        ClampNegatives();
+    }
+
     public void ApplyPassiveTick(double seconds)
     {
         Money += IncomePerSecond * seconds;

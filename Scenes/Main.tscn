@@ -45,6 +45,10 @@ custom_minimum_size = Vector2(200, 64)
 layout_mode = 2
 text = "Buy Click Power +1"
 
+[node name="HireJuniorDevButton" type="Button" parent="ActionsPanel"]
+layout_mode = 2
+text = "Hire Junior Dev (+1/sec)"
+
 [node name="PassiveTick" type="Timer" parent="."]
 autostart = true
 

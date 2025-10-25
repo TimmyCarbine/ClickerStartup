@@ -18,6 +18,7 @@ public partial class Game : Control
 
     private Button _writeCodeButton;
     private Button _buyClickPowerButton;
+    private Button _hireJuniorDevButton;
 
     private Timer _passiveTick;
     private Timer _autosave;
@@ -33,6 +34,7 @@ public partial class Game : Control
 
         _writeCodeButton = GetNode<Button>("ActionsPanel/WriteCodeButton");
         _buyClickPowerButton = GetNode<Button>("ActionsPanel/BuyClickPowerButton");
+        _hireJuniorDevButton = GetNode<Button>("ActionsPanel/HireJuniorDevButton");
 
         _passiveTick = GetNode<Timer>("PassiveTick");
         _autosave = GetNode<Timer>("Autosave");
@@ -40,6 +42,7 @@ public partial class Game : Control
         // Wire UI events
         _writeCodeButton.Pressed += OnWriteCodePressed;
         _buyClickPowerButton.Pressed += OnBuyClickPowerPressed;
+        _hireJuniorDevButton.Pressed += OnHireJuniorDevPressed;
 
         // Wire timers
         _passiveTick.Timeout += OnPassiveTick;
@@ -74,6 +77,16 @@ public partial class Game : Control
         if (_cm.TrySpend(COST))
         {
             _cm.ClickPower += 1;
+            RefreshHud();
+        }
+    }
+
+    private void OnHireJuniorDevPressed()
+    {
+        const int COST = 50; //PLACEHOLDER
+        if (_cm.TrySpend(COST))
+        {
+            _cm.AddIncomePerSecond(1.0);
             RefreshHud();
         }
     }
