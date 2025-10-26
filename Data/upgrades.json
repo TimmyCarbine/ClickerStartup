@@ -1,26 +1,45 @@
 [
     {
-        "id": "click_power_1",
+        "id": "click_flat_1",
         "name": "Stronger Clicks",
         "description": "Increase click power by 1",
         "cost": 10,
-        "type": "click_power",
-        "amount": 1
+        "type": "click_flat",
+        "amount": 1,
+        "limit": -1,
+        "cost_curve": "none"
     },
     {
-        "id": "junior_dev",
-        "name": "Hire Junior Dev",
-        "description": "+1 Income per second",
+        "id": "click_mult_1",
+        "name": "Powerful Clicks",
+        "description": "Increase click power by 20%",
         "cost": 50,
-        "type": "income_per_sec",
-        "amount": 1
+        "type": "click_mult",
+        "amount": 0.2,
+        "limit": 10,
+        "cost_curve": "geometric",
+        "growth": 1.15
     },
     {
-        "id": "marketing",
+        "id": "income_flat_1",
+        "name": "Hire Junior Dev",
+        "description": "Increase Income per sec by 1",
+        "cost": 200,
+        "type": "income_flat",
+        "amount": 1,
+        "limit": 100,
+        "cost_curve": "linear",
+        "step": 5
+    },
+    {
+        "id": "income_mult_1",
         "name": "Marketing Campaign",
         "description": "Increase Income per sec by 20%",
-        "cost": 200,
-        "type": "income_multiplier",
-        "amount": 0.2
+        "cost": 1000,
+        "type": "income_mult",
+        "amount": 0.2,
+        "limit": 5,
+        "cost_curve": "geometric",
+        "growth": 1.15
     }
 ]
