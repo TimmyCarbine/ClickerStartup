@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=8 format=3 uid="uid://dv8xkdlo703ld"]
+[gd_resource type="Theme" load_steps=9 format=3 uid="uid://dv8xkdlo703ld"]
 
 [ext_resource type="FontFile" uid="uid://baotaxl646i34" path="res://UI/Fonts/Michroma-Regular.ttf" id="1_2l080"]
 
@@ -68,7 +68,27 @@ corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qkre5"]
+content_margin_left = 12.0
+content_margin_top = 12.0
+content_margin_right = 12.0
+content_margin_bottom = 12.0
+bg_color = Color(0.16565639, 0.16565642, 0.1656563, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6u7hx"]
+content_margin_left = 12.0
+content_margin_top = 12.0
+content_margin_right = 12.0
+content_margin_bottom = 12.0
+bg_color = Color(0.16565639, 0.16565642, 0.1656563, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
 
 [resource]
 default_font = ExtResource("1_2l080")
@@ -98,4 +118,7 @@ Button/styles/hover = SubResource("StyleBoxFlat_2l080")
 Button/styles/hover_pressed = SubResource("StyleBoxFlat_2l080")
 Button/styles/normal = SubResource("StyleBoxFlat_71s2k")
 Button/styles/pressed = SubResource("StyleBoxFlat_j2k4p")
+ConfirmationDialog/icons/close = null
+ConfirmationDialog/icons/close_pressed = null
+ConfirmationDialog/styles/panel = SubResource("StyleBoxFlat_qkre5")
 PanelContainer/styles/panel = SubResource("StyleBoxFlat_6u7hx")

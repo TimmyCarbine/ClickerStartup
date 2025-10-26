@@ -6,7 +6,8 @@ public class CurrencyManager
     public double Money { get; private set; } = 0.0;
     public double LinesOfCode { get; private set; } = 0.0;
     public double IncomePerSecond { get; private set; } = 0.0;
-    public int ClickPower { get; set; } = 1;
+    public double IncomeMultiplier { get; set; } = 1.0;
+    public int ClickPower { get; private set; } = 1;
 
     // === ACTIONS ===
     public void AddOnClick()
@@ -14,6 +15,12 @@ public class CurrencyManager
         // Click adds to Money and LoC
         Money += ClickPower;
         LinesOfCode += 1;
+        ClampNegatives();
+    }
+
+    public void AddClickPower(int amount)
+    {
+        ClickPower += amount;
         ClampNegatives();
     }
 
@@ -25,7 +32,7 @@ public class CurrencyManager
 
     public void ApplyPassiveTick(double seconds)
     {
-        Money += IncomePerSecond * seconds;
+        Money += IncomePerSecond * IncomeMultiplier * seconds;
         ClampNegatives();
     }
 
@@ -70,5 +77,16 @@ public class CurrencyManager
         if (LinesOfCode < 0) LinesOfCode = 0;
         if (IncomePerSecond < 0) LinesOfCode = 0;
         if (ClickPower < 1) ClickPower = 1;
+    }
+
+    public void ResetAll()
+    {
+        Money = 0;
+        LinesOfCode = 0;
+        IncomePerSecond = 0;
+        ClickPower = 1;
+        IncomeMultiplier = 1.0;
+        //InvestorCapital = 0.0; PLACEHOLDER
+        ClampNegatives();
     }
 }

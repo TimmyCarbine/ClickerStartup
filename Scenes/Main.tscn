@@ -25,45 +25,51 @@ wait_time = 30.0
 autostart = true
 
 [node name="RootMargin" type="MarginContainer" parent="."]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+layout_mode = 1
+offset_right = 561.0
+offset_bottom = 398.0
 theme_override_constants/margin_left = 16
 theme_override_constants/margin_top = 16
 theme_override_constants/margin_right = 16
 theme_override_constants/margin_bottom = 16
 
 [node name="RootVBox" type="VBoxContainer" parent="RootMargin"]
+custom_minimum_size = Vector2(720, 0)
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="HUDRoot" type="PanelContainer" parent="RootMargin/RootVBox"]
 layout_mode = 2
 
-[node name="HUD" type="Control" parent="RootMargin/RootVBox"]
+[node name="HUD" type="Control" parent="RootMargin/RootVBox/HUDRoot"]
 custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
 
-[node name="CurrencyHUD" type="HBoxContainer" parent="RootMargin/RootVBox/HUD"]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+[node name="CurrencyHUD" type="HBoxContainer" parent="RootMargin/RootVBox/HUDRoot/HUD"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -15.0
+offset_right = 674.0
+offset_bottom = 15.0
+grow_vertical = 2
 theme_override_constants/separation = 12
 alignment = 2
 
-[node name="HUDSpacer" type="Control" parent="RootMargin/RootVBox/HUD/CurrencyHUD"]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="MoneyLabel" type="Label" parent="RootMargin/RootVBox/HUD/CurrencyHUD"]
-custom_minimum_size = Vector2(250, 0)
+[node name="MoneyLabel" type="Label" parent="RootMargin/RootVBox/HUDRoot/HUD/CurrencyHUD"]
+custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 text = "Money: 0"
 horizontal_alignment = 2
 
-[node name="LocLabel" type="Label" parent="RootMargin/RootVBox/HUD/CurrencyHUD"]
+[node name="LocLabel" type="Label" parent="RootMargin/RootVBox/HUDRoot/HUD/CurrencyHUD"]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 text = "LoC: 0"
 horizontal_alignment = 2
 
-[node name="IncomeLabel" type="Label" parent="RootMargin/RootVBox/HUD/CurrencyHUD"]
+[node name="IncomeLabel" type="Label" parent="RootMargin/RootVBox/HUDRoot/HUD/CurrencyHUD"]
 custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
 text = "Income/sec: 0"
@@ -74,31 +80,35 @@ layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 16
 
-[node name="ActionsPanel" type="VBoxContainer" parent="RootMargin/RootVBox/BodyHBox"]
+[node name="ActionsRoot" type="PanelContainer" parent="RootMargin/RootVBox/BodyHBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ActionsPanel" type="VBoxContainer" parent="RootMargin/RootVBox/BodyHBox/ActionsRoot"]
 custom_minimum_size = Vector2(340, 0)
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="Label" type="Label" parent="RootMargin/RootVBox/BodyHBox/ActionsPanel"]
+[node name="ActionsLabel" type="Label" parent="RootMargin/RootVBox/BodyHBox/ActionsRoot/ActionsPanel"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "Actions"
 
-[node name="WriteCodeButton" type="Button" parent="RootMargin/RootVBox/BodyHBox/ActionsPanel"]
+[node name="WriteCodeButton" type="Button" parent="RootMargin/RootVBox/BodyHBox/ActionsRoot/ActionsPanel"]
 custom_minimum_size = Vector2(200, 64)
 layout_mode = 2
 tooltip_text = "Write lines of code to earn money"
 theme = SubResource("Theme_r150o")
 text = "Write Code"
 
-[node name="BuyClickPowerButton" type="Button" parent="RootMargin/RootVBox/BodyHBox/ActionsPanel"]
+[node name="BuyClickPowerButton" type="Button" parent="RootMargin/RootVBox/BodyHBox/ActionsRoot/ActionsPanel"]
 custom_minimum_size = Vector2(200, 64)
 layout_mode = 2
 tooltip_text = "Increase how much money each line of code is worth"
 theme = SubResource("Theme_idj7w")
 text = "Buy Click Power +1"
 
-[node name="HireJuniorDevButton" type="Button" parent="RootMargin/RootVBox/BodyHBox/ActionsPanel"]
+[node name="HireJuniorDevButton" type="Button" parent="RootMargin/RootVBox/BodyHBox/ActionsRoot/ActionsPanel"]
 custom_minimum_size = Vector2(200, 64)
 layout_mode = 2
 tooltip_text = "Increases income per second"
@@ -116,3 +126,26 @@ horizontal_scroll_mode = 0
 [node name="UpgradesPanel" type="VBoxContainer" parent="RootMargin/RootVBox/BodyHBox/UpgradesRoot/UpgradesScroll"]
 layout_mode = 2
 theme_override_constants/separation = 8
+
+[node name="UpgradesLabel" type="Label" parent="RootMargin/RootVBox/BodyHBox/UpgradesRoot/UpgradesScroll/UpgradesPanel"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Upgrades"
+
+[node name="ResetRoot" type="PanelContainer" parent="RootMargin/RootVBox"]
+layout_mode = 2
+
+[node name="ResetPanel" type="HBoxContainer" parent="RootMargin/RootVBox/ResetRoot"]
+layout_mode = 2
+
+[node name="ResetProgressButton" type="Button" parent="RootMargin/RootVBox/ResetRoot/ResetPanel"]
+layout_mode = 2
+text = "Reset Progress"
+
+[node name="ResetConfirmDialog" type="ConfirmationDialog" parent="."]
+mode = 2
+title = "Reset Progress"
+initial_position = 2
+keep_title_visible = false
+content_scale_aspect = 1
+dialog_text = "This will delete your save and reset all progress. Continue?"

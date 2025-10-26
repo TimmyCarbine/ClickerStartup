@@ -1,0 +1,26 @@
+[
+    {
+        "id": "click_power_1",
+        "name": "Stronger Clicks",
+        "description": "Increase click power by 1",
+        "cost": 10,
+        "type": "click_power",
+        "amount": 1
+    },
+    {
+        "id": "junior_dev",
+        "name": "Hire Junior Dev",
+        "description": "+1 Income per second",
+        "cost": 50,
+        "type": "income_per_sec",
+        "amount": 1
+    },
+    {
+        "id": "marketing",
+        "name": "Marketing Campaign",
+        "description": "Increase Income per sec by 20%",
+        "cost": 200,
+        "type": "income_multiplier",
+        "amount": 0.2
+    }
+]

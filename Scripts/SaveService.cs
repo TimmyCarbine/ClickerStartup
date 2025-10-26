@@ -53,4 +53,24 @@ public static class SaveService
             return null;
         }
     }
+
+    public static void Delete(string path)
+    {
+        try
+        {
+            if(FileAccess.FileExists(path))
+            {
+                var dir = DirAccess.Open("user://");
+                if(dir != null)
+                {
+                    dir.Remove(path.Replace("user://", ""));
+                    GD.Print($"[Save] Deleted save file: {path}");
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            GD.PushWarning($"Failed to delete save file: {e.Message}");
+        }
+    }
 }
