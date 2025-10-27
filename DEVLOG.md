@@ -28,7 +28,7 @@
 - [x] refactor(economy): compute click/income from base+flat+mult  
 ### Prestige v1  
 - [x] feat(prestige): add InvestorCapital and GlobalMult  
-- [ ] feat(prestige): prestige button + confirm dialog  
+- [x] feat(prestige): prestige button + confirm dialog  
 - [ ] feat(prestige): run reset keeps meta, rebuilds upgrades  
 - [ ] feat(save): schema v2 incl. InvestorCapital & UpgradeCounts  
 - [ ] chore(balance): starter costs & growth; prestige threshold  

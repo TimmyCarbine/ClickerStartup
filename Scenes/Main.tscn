@@ -98,6 +98,14 @@ tooltip_text = "Write lines of code to earn money"
 theme = SubResource("Theme_r150o")
 text = "Write Code"
 
+[node name="PrestigeButton" type="Button" parent="RootMargin/RootVBox/BodyHBox/ActionsRoot/ActionsPanel"]
+custom_minimum_size = Vector2(200, 64)
+layout_mode = 2
+tooltip_text = "Sells company for a boost in Investor Capital (Prestige)"
+theme = SubResource("Theme_r150o")
+disabled = true
+text = "Sell Company"
+
 [node name="UpgradesRoot" type="PanelContainer" parent="RootMargin/RootVBox/BodyHBox"]
 layout_mode = 2
 size_flags_horizontal = 3
@@ -131,3 +139,7 @@ initial_position = 1
 keep_title_visible = false
 content_scale_aspect = 1
 dialog_text = "This will delete your save and reset all progress. Continue?"
+
+[node name="PrestigeConfirmDialog" type="ConfirmationDialog" parent="."]
+title = "Sell Company"
+initial_position = 1

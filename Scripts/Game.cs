@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Label = Godot.Label;
 
 public partial class Game : Control
@@ -23,11 +24,13 @@ public partial class Game : Control
 
     private Button _writeCodeButton;
     private Button _resetProgressButton;
+    private Button _prestigeButton;
 
     private Timer _passiveTick;
     private Timer _autosave;
 
     private ConfirmationDialog _resetConfirmDialog;
+    private ConfirmationDialog _prestigeConfirmDialog;
 
 
 
@@ -42,17 +45,22 @@ public partial class Game : Control
 
         _writeCodeButton = GetNode<Button>("RootMargin/RootVBox/BodyHBox/ActionsRoot/ActionsPanel/WriteCodeButton");
         _resetProgressButton = GetNode<Button>("RootMargin/RootVBox/ResetRoot/ResetPanel/ResetProgressButton");
+        _prestigeButton = GetNode<Button>("RootMargin/RootVBox/BodyHBox/ActionsRoot/ActionsPanel/PrestigeButton");
 
         _passiveTick = GetNode<Timer>("PassiveTick");
         _autosave = GetNode<Timer>("Autosave");
 
         _resetConfirmDialog = GetNode<ConfirmationDialog>("ResetConfirmDialog");
+        _prestigeConfirmDialog = GetNode<ConfirmationDialog>("PrestigeConfirmDialog");
 
         // Wire UI events
         _writeCodeButton.Pressed += OnWriteCodePressed;
 
         _resetProgressButton.Pressed += () => _resetConfirmDialog.Show();
         _resetConfirmDialog.Confirmed += OnResetConfirmed;
+
+        _prestigeButton.Pressed += OnPrestigePressed;
+        _prestigeConfirmDialog.Confirmed += OnPrestigeConfirmed;
 
         // Wire timers
         _passiveTick.Timeout += OnPassiveTick;
@@ -123,6 +131,33 @@ public partial class Game : Control
         GD.Print($"Income Mult: {_cm.IncomeMult}"); // PLACEHOLDER
     }
 
+    private void OnPrestigePressed()
+    {
+        int preview = _cm.PreviewInvestorGain();
+        string msg = preview > 0
+            ? $"You will gain +{preview} Investor Capital (+{preview * 5}% global). \nProceed?"
+            : "You need at least $10000 to gain 1 point. \nPrestige anyway?";
+        _prestigeConfirmDialog.DialogText = msg;
+        _prestigeConfirmDialog.Show();
+    }
+
+    private void OnPrestigeConfirmed()
+    {
+        int gained = _cm.DoPrestige();
+
+        foreach (var u in _um.Upgrades) u.Purchases = 0;
+        _cm.RebuildStatsFrom(_um.Upgrades);
+
+        foreach (var child in _upgradePanel.GetChildren())
+            if (child is Button) child.QueueFree();
+
+        BuildUpgradeUI();
+        RefreshHud();
+        SaveService.SaveAll(SAVE_PATH, _cm, _um);
+
+        GD.Print($"[Prestige] Gained {gained} capital. Total: {_cm.InvestorCapital} (Global Multiplier: {_cm.GlobalMult:0.00}x)");
+    }
+
     private void OnAutosave()
     {
         SaveService.SaveAll(SAVE_PATH, _cm, _um);
@@ -187,7 +222,15 @@ public partial class Game : Control
         _locLabel.Text = $"LoC: {NumberFormatter.Format(_cm.LinesOfCode)}";
         _incomeLabel.Text = $"Income/sec: {NumberFormatter.Format(_cm.CurrentIncomePerSec)}";
 
+        // Update upgrade button text & enable/disable state
         foreach (var (btn, u) in _buttonToUpgrade)
             UpdateUpgradeButton(btn, u);
+
+        // Update prestige button text & enable/disable
+        int preview = _cm.PreviewInvestorGain();
+        _prestigeButton.Disabled = preview <= 0;
+        _prestigeButton.Text = preview > 0
+            ? $"Sell Company (+{preview} Investor Capital)"
+            : "Sell Company (Need $10,000)";
     }
 }
