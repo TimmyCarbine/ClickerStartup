@@ -4,30 +4,30 @@
 
 ## Week 1 – Core loop & UI  
 ### Scene + wiring  
-- [ ] feat(core): add Main.tscn scene skeleton (HUD/Actions/Upgrades)  
-- [ ] feat(ui): add Write Code button + labels  
-- [ ] feat(core): add timers (passive tick, autosave)  
+- [x] feat(core): add Main.tscn scene skeleton (HUD/Actions/Upgrades)  
+- [x] feat(ui): add Write Code button + labels  
+- [x] feat(core): add timers (passive tick, autosave)  
 ### Logic + helpers  
-- [ ] feat(currency): CurrencyManager (click, passive)  
-- [ ] feat(util): NumberFormatter (K/M/B)  
-- [ ] feat(save): SaveService v1 (JSON, autosave, on-quit)  
+- [x] feat(currency): CurrencyManager (click, passive)  
+- [x] feat(util): NumberFormatter (K/M/B)  
+- [x] feat(save): SaveService v1 (JSON, autosave, on-quit)  
 ### Polish  
-- [ ] chore(ui): responsive layout (containers, anchors)  
-- [ ] chore(style): AppTheme (fonts, button styles)  
+- [x] chore(ui): responsive layout (containers, anchors)  
+- [x] chore(style): AppTheme (fonts, button styles)  
 ### Milestone  
-- [ ] docs(changelog): week-1 complete  
-- [ ] chore(release): tag v0.1-core-loop  
+- [x] docs(changelog): week-1 complete  
+- [x] chore(release): tag v0.1-core-loop  
 
 ---
 
 ## Week 2 – Upgrades & Prestige  
 ### Upgrades → repeatable with limits  
-- [ ] feat(upgrades): add limit & purchases to model  
-- [ ] feat(save): persist upgrade purchase counts  
-- [ ] feat(ui): show count and dynamic cost on upgrade buttons  
-- [ ] refactor(economy): compute click/income from base+flat+mult  
+- [x] feat(upgrades): add limit & purchases to model  
+- [x] feat(save): persist upgrade purchase counts  
+- [x] feat(ui): show count and dynamic cost on upgrade buttons  
+- [x] refactor(economy): compute click/income from base+flat+mult  
 ### Prestige v1  
-- [ ] feat(prestige): add InvestorCapital and GlobalMult  
+- [x] feat(prestige): add InvestorCapital and GlobalMult  
 - [ ] feat(prestige): prestige button + confirm dialog  
 - [ ] feat(prestige): run reset keeps meta, rebuilds upgrades  
 - [ ] feat(save): schema v2 incl. InvestorCapital & UpgradeCounts  

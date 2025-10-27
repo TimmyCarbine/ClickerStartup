@@ -16,25 +16,7 @@ public class UpgradeManager
         if (!cm.TrySpend(cost)) return false;
 
         u.Purchases += 1;
-
-        switch (u.Type)
-        {
-            case "click_flat":
-                cm.AddClickFlat((int)u.Amount);
-                break;
-            case "click_mult":
-                cm.MultiplyClick(1 + u.Amount);
-                break;
-            case "income_flat":
-                cm.AddBaseIncome(u.Amount);
-                break;
-            case "income_mult":
-                cm.MultiplyIncome(1 + u.Amount);
-                break;
-            default:
-                GD.PushWarning($"Unknown upgrade type: {u.Type}");
-                break;
-        }
+        u.ApplyCount(cm, 1);
         return true;
     }
 
@@ -63,30 +45,6 @@ public class UpgradeManager
 
     public void ReapplyAll(CurrencyManager cm)
     {
-        cm.ResetStatsKeepRunAndPrestige();
-
-        foreach (var u in Upgrades)
-        {
-            if (u.Purchases <= 0) continue;
-
-            switch (u.Type)
-            {
-                case "click_flat":
-                    cm.AddClickFlat((int)u.Amount);
-                    break;
-                case "click_mult":
-                    cm.MultiplyClick(1 + u.Amount);
-                    break;
-                case "income_flat":
-                    cm.AddBaseIncome(u.Amount);
-                    break;
-                case "income_mult":
-                    cm.MultiplyIncome(1 + u.Amount);
-                    break;
-                default:
-                    GD.PushWarning($"Unknown upgrade type: {u.Type}");
-                    break;
-            }
-        }
+        cm.RebuildStatsFrom(Upgrades);
     }
 }

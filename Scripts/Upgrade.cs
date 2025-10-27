@@ -19,8 +19,11 @@ public class Upgrade
 
     public double CurrentCost => CostCurve switch
     {
-        "none"      => BaseCost,
-        "linear"    => BaseCost + Step * Purchases,
-        _           => BaseCost * System.Math.Pow(Growth, Purchases) // geometric default
+        "none" => BaseCost,
+        "linear" => BaseCost + Step * Purchases,
+        _ => BaseCost * System.Math.Pow(Growth, Purchases) // geometric default
     };
+
+    public void ApplyCount(CurrencyManager cm, int count) =>
+        UpgradeEffects.ApplyCount(cm, this, count);
 }

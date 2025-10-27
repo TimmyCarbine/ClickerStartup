@@ -1,4 +1,6 @@
+using Godot;
 using System;
+using System.Collections.Generic;
 
 public class CurrencyManager
 {
@@ -19,8 +21,8 @@ public class CurrencyManager
     public double IncomeMult { get; private set; } = 1.0;
 
     // === PRESTIGE ===
-    public double GlobalMult => 1.0 + 0.05 * InvestorCapital;
     public double InvestorCapital { get; private set; } = 0.0;
+    public double GlobalMult => 1.0 + InvestorCapital * 0.05;
 
     public double ClickGainPerPress => (BaseClickPower + ClickFlat) * ClickMult * GlobalMult;
     public double CurrentIncomePerSec => (BaseIncomePerSecond + IncomeFlat) * IncomeMult * GlobalMult;
@@ -33,49 +35,54 @@ public class CurrencyManager
         LinesOfCode += 1;
         ClampNegatives();
     }
-
     public void AddClickFlat(int amount)
     {
         ClickFlat += amount;
         ClampNegatives();
     }
-
     public void MultiplyClick(double factor)
     {
         ClickMult *= factor;
         ClampNegatives();
     }
-
     public void AddBaseIncome(double amount)
     {
         BaseIncomePerSecond += amount;
         ClampNegatives();
     }
-
     public void MultiplyIncome(double factor)
     {
         IncomeMult *= factor;
         ClampNegatives();
     }
-
     public void SetMoney(double amount)
     {
         Money = amount;
         ClampNegatives();
     }
-
     public void SetLinesOfCode(double amount)
     {
         LinesOfCode = amount;
         ClampNegatives();
     }
-
     public void SetInvestorCapital(double amount)
     {
         InvestorCapital = amount;
         ClampNegatives();
     }
+    
+    // === PRESTIGE FLOW (for completeness) ===
 
+public int PreviewInvestorGain() => (int)Math.Floor(Money / 10_000.0);
+
+public int DoPrestige()
+{
+    int gained = PreviewInvestorGain();
+    if (gained > 0) InvestorCapital += gained;
+
+    ResetRunButKeepPrestige();
+    return gained;
+}
     public void ApplyPassiveTick(double seconds)
     {
         Money += CurrentIncomePerSec * seconds;
@@ -96,34 +103,62 @@ public class CurrencyManager
     {
         if (Money < 0) Money = 0;
         if (LinesOfCode < 0) LinesOfCode = 0;
-        if (BaseClickPower < 1) BaseClickPower = 1;
         if (BaseIncomePerSecond < 0) BaseIncomePerSecond = 0;
-        if (ClickFlat < 0) ClickFlat = 0;
         if (IncomeFlat < 0) IncomeFlat = 0;
+        if (ClickFlat < 0) ClickFlat = 0;
+        if (ClickMult < 0) ClickMult = 1.0;
+        if (IncomeMult < 0) IncomeMult = 1.0;
     }
 
-    public void ResetStatsKeepRunAndPrestige()
+    // === PUBLIC API ===
+
+    /// Reset the current run (currencies + non-prestige stats), keep InvestorCapital.
+    public void ResetRunButKeepPrestige()
     {
-        BaseClickPower = 1;
-        BaseIncomePerSecond = 0;
-
-        ClickFlat = 0;
-        IncomeFlat = 0;
-
-        ClickMult = 1.0;
-        IncomeMult = 1.0;
+        ResetCurrencies();
+        ResetNonPrestigeStats();
+        ClampNegatives();
     }
 
+    /// Total nuke: also clears InvestorCapital (so GlobalMult returns to 1.0).
     public void ResetAll()
+    {
+        ResetRunButKeepPrestige();
+        InvestorCapital = 0.0;
+    }
+
+    public void RebuildStatsFrom(IEnumerable<Upgrade> upgrades)
+    {
+        // Do NOT touch currencies or prestige/meta here
+        ResetNonPrestigeStats(); // private helper you already have
+
+        // Reapply effects from purchase counts
+        foreach (var u in upgrades)
+        {
+            u.ApplyCount(this, u.Purchases);
+        }
+    }
+
+    // === PRIVATE HELPERS ===
+
+    private void ResetCurrencies()
     {
         Money = 0;
         LinesOfCode = 0;
+    }
+
+    private void ResetNonPrestigeStats()
+    {
+        // base
         BaseClickPower = 1;
         BaseIncomePerSecond = 0;
+
+        // additive
         ClickFlat = 0;
         IncomeFlat = 0;
-        ClickMult = 1;
-        IncomeMult = 1;
-        ClampNegatives();
+
+        // multiplicative (non-prestige only)
+        ClickMult = 1.0;
+        IncomeMult = 1.0;
     }
 }

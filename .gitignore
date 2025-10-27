@@ -1,3 +1,15 @@
 # Godot 4+ specific ignores
+.import/
 .godot/
+# Godot .NET
+.mono/
+# OS/editor noise
+*.tmp
+*.log
+.DS_Store
+Thumbs.db
 /android/
+
+# Build outputs
+bin/
+obj/
