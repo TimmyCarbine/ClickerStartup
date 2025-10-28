@@ -32,6 +32,7 @@ public partial class Game : Control
 
     private ConfirmationDialog _resetConfirmDialog;
     private ConfirmationDialog _prestigeConfirmDialog;
+    private AcceptDialog _prestigeSummaryDialog;
 
 
 
@@ -54,6 +55,7 @@ public partial class Game : Control
 
         _resetConfirmDialog = GetNode<ConfirmationDialog>("ResetConfirmDialog");
         _prestigeConfirmDialog = GetNode<ConfirmationDialog>("PrestigeConfirmDialog");
+        _prestigeSummaryDialog = GetNode<AcceptDialog>("PrestigeSummaryDialog");
 
         // Wire UI events
         _writeCodeButton.Pressed += OnWriteCodePressed;
@@ -156,6 +158,11 @@ public partial class Game : Control
         BuildUpgradeUI();
         RefreshHud();
         SaveService.SaveAll(SAVE_PATH, _cm, _um);
+
+        _prestigeSummaryDialog.DialogText =
+            $"Sold your startup! \nGained +{gained} Investor Capital. \n" +
+            $"Global bonus is now {((_cm.GlobalMult - 1) * 100):0}%";
+        _prestigeSummaryDialog.Show();
 
         GD.Print($"[Prestige] Gained {gained} capital. Total: {_cm.InvestorCapital} (Global Multiplier: {_cm.GlobalMult:0.00}x)");
     }

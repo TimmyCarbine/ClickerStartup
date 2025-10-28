@@ -146,3 +146,5 @@ dialog_text = "This will delete your save and reset all progress. Continue?"
 [node name="PrestigeConfirmDialog" type="ConfirmationDialog" parent="."]
 title = "Sell Company"
 initial_position = 1
+
+[node name="PrestigeSummaryDialog" type="AcceptDialog" parent="."]
