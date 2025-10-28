@@ -71,6 +71,9 @@ layout_mode = 2
 text = "Income/sec: 0"
 horizontal_alignment = 2
 
+[node name="InvestorLabel" type="Label" parent="RootMargin/RootVBox/HUDRoot/HUD/CurrencyHUD"]
+layout_mode = 2
+
 [node name="BodyHBox" type="HBoxContainer" parent="RootMargin/RootVBox"]
 custom_minimum_size = Vector2(0, 300)
 layout_mode = 2

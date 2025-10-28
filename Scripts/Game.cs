@@ -21,6 +21,7 @@ public partial class Game : Control
     private Label _moneyLabel;
     private Label _locLabel;
     private Label _incomeLabel;
+    private Label _investorLabel;
 
     private Button _writeCodeButton;
     private Button _resetProgressButton;
@@ -42,6 +43,7 @@ public partial class Game : Control
         _moneyLabel = GetNode<Label>("RootMargin/RootVBox/HUDRoot/HUD/CurrencyHUD/MoneyLabel");
         _locLabel = GetNode<Label>("RootMargin/RootVBox/HUDRoot/HUD/CurrencyHUD/LocLabel");
         _incomeLabel = GetNode<Label>("RootMargin/RootVBox/HUDRoot/HUD/CurrencyHUD/IncomeLabel");
+        _investorLabel = GetNode<Label>("RootMargin/RootVBox/HUDRoot/HUD/CurrencyHUD/InvestorLabel");
 
         _writeCodeButton = GetNode<Button>("RootMargin/RootVBox/BodyHBox/ActionsRoot/ActionsPanel/WriteCodeButton");
         _resetProgressButton = GetNode<Button>("RootMargin/RootVBox/ResetRoot/ResetPanel/ResetProgressButton");
@@ -232,5 +234,7 @@ public partial class Game : Control
         _prestigeButton.Text = preview > 0
             ? $"Sell Company (+{preview} Investor Capital)"
             : "Sell Company (Need $10,000)";
+
+        _investorLabel.Text = $"IC: {NumberFormatter.Format(_cm.InvestorCapital)} (+{((_cm.GlobalMult - 1) * 100):0}% )";
     }
 }
