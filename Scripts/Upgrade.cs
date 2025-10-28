@@ -6,7 +6,7 @@ public class Upgrade
     [JsonPropertyName("name")] public string Name { get; set; }
     [JsonPropertyName("description")] public string Description { get; set; }
     [JsonPropertyName("cost")] public double BaseCost { get; set; }
-    [JsonPropertyName("type")] public string Type { get; set; } // "click_flat" | "click_mult" | "income_flat" | "income_multi"
+    [JsonPropertyName("type")] public string Type { get; set; } // "click_flat" | "click_mult" | "income_flat" | "income_mult"
     [JsonPropertyName("amount")] public double Amount { get; set; }
     [JsonPropertyName("limit")] public int Limit { get; set; }
     [JsonPropertyName("cost_curve")] public string CostCurve { get; set; } = "geometric"; // "geometric" | "linear" | "none"
