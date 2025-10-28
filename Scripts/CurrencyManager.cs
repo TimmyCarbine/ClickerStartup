@@ -90,14 +90,14 @@ public class CurrencyManager
 
     // === PRESTIGE FLOW (for completeness) ===
 
-    public int PreviewInvestorGain()
+    public long PreviewInvestorGain()
     {
         double effective = Math.Max(0, Money - HighestMoneyEver);
-        return (int)Math.Floor(effective / 10_000.0);
+        return (long)Math.Floor(effective / 10_000.0);
     }
-    public int DoPrestige()
+    public long DoPrestige()
     {
-        int gained = PreviewInvestorGain();
+        long gained = PreviewInvestorGain();
         if (gained > 0)
         {
             InvestorCapital += gained;

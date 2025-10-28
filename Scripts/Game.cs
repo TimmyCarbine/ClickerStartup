@@ -137,7 +137,7 @@ public partial class Game : Control
 
     private void OnPrestigePressed()
     {
-        int preview = _cm.PreviewInvestorGain();
+        long preview = _cm.PreviewInvestorGain();
         string msg = preview > 0
             ? $"You will gain +{preview} Investor Capital (+{preview * 5}% global). \nProceed?"
             : "You need at least $10000 to gain 1 point. \nPrestige anyway?";
@@ -147,7 +147,7 @@ public partial class Game : Control
 
     private void OnPrestigeConfirmed()
     {
-        int gained = _cm.DoPrestige();
+        long gained = _cm.DoPrestige();
 
         foreach (var u in _um.Upgrades) u.Purchases = 0;
         _cm.RebuildStatsFrom(_um.Upgrades);
@@ -236,7 +236,7 @@ public partial class Game : Control
             UpdateUpgradeButton(btn, u);
 
         // Update prestige button text & enable/disable
-        int preview = _cm.PreviewInvestorGain();
+        long preview = _cm.PreviewInvestorGain();
         _prestigeButton.Disabled = preview <= 0;
         _prestigeButton.Text = preview > 0
             ? $"Sell Company (+{preview} Investor Capital)"
