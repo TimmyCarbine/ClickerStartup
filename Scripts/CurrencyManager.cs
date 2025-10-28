@@ -7,6 +7,7 @@ public class CurrencyManager
     // === STATE ===
     public double Money { get; private set; } = 0.0;
     public double LinesOfCode { get; private set; } = 0.0;
+    public double HighestMoneyEver { get; private set; } = 0.0;
 
     // === BASE VALUES ===
     public int BaseClickPower { get; private set; } = 1;
@@ -33,6 +34,7 @@ public class CurrencyManager
         // Click adds to Money and LoC
         Money += ClickGainPerPress;
         LinesOfCode += 1;
+        HighestMoneyEver = Math.Max(HighestMoneyEver, Money);
         ClampNegatives();
     }
     public void AddClickFlat(int amount)
@@ -65,30 +67,18 @@ public class CurrencyManager
         LinesOfCode = amount;
         ClampNegatives();
     }
+    public void SetHighestMoneyEver(double amount) => HighestMoneyEver = amount;
     public void SetInvestorCapital(double amount)
     {
         InvestorCapital = amount;
         ClampNegatives();
     }
-    
-    // === PRESTIGE FLOW (for completeness) ===
-
-public int PreviewInvestorGain() => (int)Math.Floor(Money / 10_000.0);
-
-public int DoPrestige()
-{
-    int gained = PreviewInvestorGain();
-    if (gained > 0) InvestorCapital += gained;
-
-    ResetRunButKeepPrestige();
-    return gained;
-}
     public void ApplyPassiveTick(double seconds)
     {
         Money += CurrentIncomePerSec * seconds;
+        HighestMoneyEver = Math.Max(HighestMoneyEver, Money);
         ClampNegatives();
     }
-
     public bool TrySpend(double amount)
     {
         if (Money < amount) return false;
@@ -96,6 +86,25 @@ public int DoPrestige()
         Money -= amount;
         ClampNegatives();
         return true;
+    }
+
+    // === PRESTIGE FLOW (for completeness) ===
+
+    public int PreviewInvestorGain()
+    {
+        double effective = Math.Max(0, Money - HighestMoneyEver);
+        return (int)Math.Floor(effective / 10_000.0);
+    }
+    public int DoPrestige()
+    {
+        int gained = PreviewInvestorGain();
+        if (gained > 0)
+        {
+            InvestorCapital += gained;
+            HighestMoneyEver = Math.Max(HighestMoneyEver, Money);
+        }
+        ResetRunButKeepPrestige();
+        return gained;
     }
 
     // === CURRENCY HELPERS ===

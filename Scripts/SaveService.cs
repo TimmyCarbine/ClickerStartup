@@ -12,6 +12,7 @@ public class SaveData
     // === CORE CURRENCIES ===
     public double Money { get; set; }
     public double LinesOfCode { get; set; }
+    public double HighestMoneyEver { get; set; }
 
     // === PRESTIGE / GLOBAL ===
     public double InvestorCapital { get; set; }
@@ -38,6 +39,7 @@ public static class SaveService
                 SchemaVersion = 2,
                 Money = cm.Money,
                 LinesOfCode = cm.LinesOfCode,
+                HighestMoneyEver = cm.HighestMoneyEver,
                 InvestorCapital = cm.InvestorCapital,
                 UpgradeCounts = um.Upgrades.ToDictionary(u => u.Id, u => u.Purchases),
                 LastSavedUnix = DateTimeOffset.UtcNow.ToUnixTimeSeconds()
@@ -67,6 +69,7 @@ public static class SaveService
 
             cm.SetMoney(data.Money);
             cm.SetLinesOfCode(data.LinesOfCode);
+            cm.SetHighestMoneyEver(data.HighestMoneyEver);
             cm.SetInvestorCapital(data.InvestorCapital);
 
             foreach (var u in um.Upgrades)
@@ -75,7 +78,7 @@ public static class SaveService
                 if (data.UpgradeCounts != null && data.UpgradeCounts.TryGetValue(u.Id, out var count))
                     u.Purchases = Math.Max(0, count);
             }
-            
+
             um.ReapplyAll(cm);
             GD.Print("[Load] OK");
             return true;
