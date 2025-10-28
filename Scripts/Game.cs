@@ -242,6 +242,6 @@ public partial class Game : Control
             ? $"Sell Company (+{preview} Investor Capital)"
             : "Sell Company (Need $10,000)";
 
-        _investorLabel.Text = $"IC: {NumberFormatter.Format(_cm.InvestorCapital)} (+{((_cm.GlobalMult - 1) * 100):0}% )";
+        _investorLabel.Text = $"IC: {NumberFormatter.Format(_cm.InvestorCapital)} (+{NumberFormatter.FormatPercent((_cm.GlobalMult - 1) * 100)})";
     }
 }
