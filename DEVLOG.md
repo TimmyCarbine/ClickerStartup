@@ -29,9 +29,9 @@
 ### Prestige v1  
 - [x] feat(prestige): add InvestorCapital and GlobalMult  
 - [x] feat(prestige): prestige button + confirm dialog  
-- [ ] feat(prestige): run reset keeps meta, rebuilds upgrades  
-- [ ] feat(save): schema v2 incl. InvestorCapital & UpgradeCounts  
-- [ ] chore(balance): starter costs & growth; prestige threshold  
+- [x] feat(prestige): run reset keeps meta, rebuilds upgrades  
+- [x] feat(save): schema v2 incl. InvestorCapital & UpgradeCounts  
+- [x] chore(balance): starter costs & growth; prestige threshold  
 ### Reset progress  
 - [ ] feat(settings): reset progress button + confirmation  
 - [ ] feat(save): delete user save helper  
