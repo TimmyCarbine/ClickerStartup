@@ -7,7 +7,6 @@ public class CurrencyManager
     // === STATE ===
     public double Money { get; private set; } = 0.0;
     public double LinesOfCode { get; private set; } = 0.0;
-    public double HighestMoneyEver { get; private set; } = 0.0;
 
     // === BASE VALUES ===
     public int BaseClickPower { get; private set; } = 1;
@@ -22,8 +21,10 @@ public class CurrencyManager
     public double IncomeMult { get; private set; } = 1.0;
 
     // === PRESTIGE ===
+    public double MaxMoneyEarned { get; private set; } = 0.0;
     public double InvestorCapital { get; private set; } = 0.0;
     public double GlobalMult => 1.0 + InvestorCapital * 0.05;
+    public double NextIcTargetMoney => MaxMoneyEarned + 10_000.0;
 
     public double ClickGainPerPress => (BaseClickPower + ClickFlat) * ClickMult * GlobalMult;
     public double CurrentIncomePerSec => (BaseIncomePerSecond + IncomeFlat) * IncomeMult * GlobalMult;
@@ -34,7 +35,6 @@ public class CurrencyManager
         // Click adds to Money and LoC
         Money += ClickGainPerPress;
         LinesOfCode += 1;
-        HighestMoneyEver = Math.Max(HighestMoneyEver, Money);
         ClampNegatives();
     }
     public void AddClickFlat(int amount)
@@ -67,7 +67,7 @@ public class CurrencyManager
         LinesOfCode = amount;
         ClampNegatives();
     }
-    public void SetHighestMoneyEver(double amount) => HighestMoneyEver = amount;
+    public void SetMaxMoneyEarned(double amount) => MaxMoneyEarned = Math.Max(0.0, amount);
     public void SetInvestorCapital(double amount)
     {
         InvestorCapital = amount;
@@ -76,7 +76,6 @@ public class CurrencyManager
     public void ApplyPassiveTick(double seconds)
     {
         Money += CurrentIncomePerSec * seconds;
-        HighestMoneyEver = Math.Max(HighestMoneyEver, Money);
         ClampNegatives();
     }
     public bool TrySpend(double amount)
@@ -92,8 +91,9 @@ public class CurrencyManager
 
     public long PreviewInvestorGain()
     {
-        double effective = Math.Max(0, Money - HighestMoneyEver);
-        return (long)Math.Floor(effective / 10_000.0);
+        double excess = Money - MaxMoneyEarned;
+        if (excess < 0) excess = 0;
+        return (long)Math.Floor(excess / 10_000.0);
     }
     public long DoPrestige()
     {
@@ -101,7 +101,7 @@ public class CurrencyManager
         if (gained > 0)
         {
             InvestorCapital += gained;
-            HighestMoneyEver = Math.Max(HighestMoneyEver, Money);
+            if (Money > MaxMoneyEarned) MaxMoneyEarned = Money;
         }
         ResetRunButKeepPrestige();
         return gained;

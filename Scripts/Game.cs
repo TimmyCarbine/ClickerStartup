@@ -140,7 +140,7 @@ public partial class Game : Control
         long preview = _cm.PreviewInvestorGain();
         string msg = preview > 0
             ? $"You will gain +{preview} Investor Capital (+{preview * 5}% global). \nProceed?"
-            : "You need at least $10000 to gain 1 point. \nPrestige anyway?";
+            : $"You need to exceed your record (${NumberFormatter.Format(_cm.MaxMoneyEarned)}) by $10,000.\nNext target: ${NumberFormatter.Format(_cm.NextIcTargetMoney)}";
         _prestigeConfirmDialog.DialogText = msg;
         _prestigeConfirmDialog.Show();
     }
@@ -160,8 +160,8 @@ public partial class Game : Control
         SaveService.SaveAll(SAVE_PATH, _cm, _um);
 
         _prestigeSummaryDialog.DialogText =
-            $"Sold your startup! \nGained +{gained} Investor Capital. \n" +
-            $"Global bonus is now {((_cm.GlobalMult - 1) * 100):0}%";
+            $"Sold your startup! \nGained +{NumberFormatter.Format(gained)} Investor Capital. \n" +
+            $"Global bonus is now (+{NumberFormatter.FormatPercent((_cm.GlobalMult - 1) * 100)})";
         _prestigeSummaryDialog.Show();
 
         GD.Print($"[Prestige] Gained {gained} capital. Total: {_cm.InvestorCapital} (Global Multiplier: {_cm.GlobalMult:0.00}x)");
@@ -239,8 +239,8 @@ public partial class Game : Control
         long preview = _cm.PreviewInvestorGain();
         _prestigeButton.Disabled = preview <= 0;
         _prestigeButton.Text = preview > 0
-            ? $"Sell Company (+{preview} Investor Capital)"
-            : "Sell Company (Need $10,000)";
+            ? $"Sell Company (+{NumberFormatter.Format(preview)} Investor Capital)"
+            : $"Sell Company (Next: {NumberFormatter.Format(_cm.NextIcTargetMoney)})";
 
         _investorLabel.Text = $"IC: {NumberFormatter.Format(_cm.InvestorCapital)} (+{NumberFormatter.FormatPercent((_cm.GlobalMult - 1) * 100)})";
     }
