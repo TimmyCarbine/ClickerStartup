@@ -1,12 +1,12 @@
 [
   {
-    "id": "click_flat_1",
-    "name": "Click Power +1",
+    "id": "click_flat_I",
+    "name": "Click Power",
     "description": "Clicks add +1 money",
     "type": "click_flat",
     "amount": 1,
     "cost": 10,
-    "limit": -1,
+    "limit": 500,
     "cost_curve": "geometric",
     "growth": 1.12
   },
@@ -17,31 +17,35 @@
     "type": "click_mult",
     "amount": 0.20,
     "cost": 120,
+    "limit": 20,
+    "cost_curve": "geometric",
+    "growth": 1.35
+  },
+  {
+    "id": "click_mult_II",
+    "name": "Stronger Clicks II",
+    "description": "Clicks are 35% stronger",
+    "type": "click_mult",
+    "amount": 0.35,
+    "cost": 1850,
     "limit": 10,
     "cost_curve": "geometric",
-    "growth": 1.28
+    "growth": 1.45,
+    "requires_id": "click_mult_I",
+    "requires": "maxed"
   },
   {
-    "id": "junior_dev_1",
-    "name": "Hire Junior Dev",
-    "description": "+1 income/sec",
-    "type": "income_flat",
-    "amount": 1,
-    "cost": 100,
-    "limit": -1,
+    "id": "optimizer",
+    "name": "Code Optimizer",
+    "description": "Clicks are 60% stronger",
+    "type": "click_mult",
+    "amount": 0.60,
+    "cost": 15000,
+    "limit": 5,
     "cost_curve": "geometric",
-    "growth": 1.15
-  },
-  {
-    "id": "team_lead_1",
-    "name": "Promote Team Lead",
-    "description": "+5 income/sec",
-    "type": "income_flat",
-    "amount": 5,
-    "cost": 520,
-    "limit": -1,
-    "cost_curve": "geometric",
-    "growth": 1.26
+    "growth": 1.60,
+    "requires_id": "click_mult_II",
+    "requires": "maxed"
   },
   {
     "id": "marketing_I",
@@ -50,30 +54,9 @@
     "type": "income_mult",
     "amount": 0.20,
     "cost": 180,
-    "limit": 10,
+    "limit": 20,
     "cost_curve": "geometric",
-    "growth": 1.24
-  },
-  {
-    "id": "optimizer",
-    "name": "Code Optimizer",
-    "description": "Clicks are 35% stronger",
-    "type": "click_mult",
-    "amount": 0.35,
-    "cost": 1850,
-    "limit": 1,
-    "cost_curve": "none"
-  },
-  {
-    "id": "automation_bot",
-    "name": "Automation Bot",
-    "description": "+5 income/sec",
-    "type": "income_flat",
-    "amount": 5,
-    "cost": 1350,
-    "limit": -1,
-    "cost_curve": "geometric",
-    "growth": 1.22
+    "growth": 1.35
   },
   {
     "id": "marketing_II",
@@ -82,9 +65,11 @@
     "type": "income_mult",
     "amount": 0.35,
     "cost": 3200,
-    "limit": 5,
+    "limit": 10,
     "cost_curve": "geometric",
-    "growth": 1.28
+    "growth": 1.45,
+    "requires_id": "marketing_I",
+    "requires": "maxed"
   },
   {
     "id": "ops_refactor",
@@ -92,18 +77,48 @@
     "description": "Passive income +60%",
     "type": "income_mult",
     "amount": 0.60,
-    "cost": 8500,
-    "limit": 1,
-    "cost_curve": "none"
+    "cost": 18500,
+    "limit": 5,
+    "cost_curve": "geometric",
+    "growth": 1.60,
+    "requires_id": "marketing_II",
+    "requires": "maxed"
   },
   {
-    "id": "click_mult_II",
-    "name": "Stronger Clicks II",
-    "description": "Clicks are 40% stronger",
-    "type": "click_mult",
-    "amount": 0.40,
-    "cost": 5000,
-    "limit": 5,
-    "cost_curve": "none"
+    "id": "junior_dev_I",
+    "name": "Hire Junior Dev",
+    "description": "+1 income/sec",
+    "type": "income_flat",
+    "amount": 1,
+    "cost": 100,
+    "limit": 200,
+    "cost_curve": "geometric",
+    "growth": 1.15
+  },
+  {
+    "id": "team_lead_I",
+    "name": "Promote Team Lead",
+    "description": "+5 income/sec",
+    "type": "income_flat",
+    "amount": 5,
+    "cost": 520,
+    "limit": 400,
+    "cost_curve": "geometric",
+    "growth": 1.25,
+    "requires_id": "junior_dev_I",
+    "requires_min": 100
+  },
+  {
+    "id": "automation_bot",
+    "name": "Automation Bot",
+    "description": "+10 income/sec",
+    "type": "income_flat",
+    "amount": 10,
+    "cost": 1350,
+    "limit": 600,
+    "cost_curve": "geometric",
+    "growth": 1.30,
+    "requires_id": "team_lead_I",
+    "requires_min": 200
   }
 ]

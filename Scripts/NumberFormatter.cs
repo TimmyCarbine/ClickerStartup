@@ -7,21 +7,48 @@ public static class NumberFormatter
         // Whole numbers up to 999
         if (Math.Abs(n) < 1_000d) return n.ToString("0");
         // Thousands
-        if (Math.Abs(n) < 1_000_000d) return (n / 1_000d).ToString("0.#") + "K";
+        if (Math.Abs(n) < 1_000_000d) return (n / 1_000d).ToString("0.#") + " K";
         // Millions
-        if (Math.Abs(n) < 1_000_000_000d) return (n / 1_000_000d).ToString("0.#") + "M";
+        if (Math.Abs(n) < 1_000_000_000d) return (n / 1_000_000d).ToString("0.#") + " M";
         // Billions
-        if (Math.Abs(n) < 1_000_000_000_000d) return (n / 1_000_000_000d).ToString("0.#") + "B";
-        // Trillions +
-        return (n / 1_000_000_000_000d).ToString("0.#") + "T";
+        if (Math.Abs(n) < 1_000_000_000_000d) return (n / 1_000_000_000d).ToString("0.#") + " B";
+        // Trillions
+        if(Math.Abs(n) < 1_000_000_000_000_000d) return (n / 1_000_000_000_000d).ToString("0.#") + " T";
+        // Quadrillions
+        if(Math.Abs(n) < 1_000_000_000_000_000_000d) return (n / 1_000_000_000_000_000d).ToString("0.#") + " Qa";
+        // Quintrillions
+        if(Math.Abs(n) < 1_000_000_000_000_000_000_000d) return (n / 1_000_000_000_000_000_000d).ToString("0.#") + " Qi";
+        // Sextillions
+        if(Math.Abs(n) < 1_000_000_000_000_000_000_000_000d) return (n / 1_000_000_000_000_000_000_000d).ToString("0.#") + " Sx";
+        // Septillions
+        if(Math.Abs(n) < 1_000_000_000_000_000_000_000_000_000d) return (n / 1_000_000_000_000_000_000_000_000d).ToString("0.#") + " Sp";
+        // Octillions
+        if(Math.Abs(n) < 1_000_000_000_000_000_000_000_000_000_000d) return (n / 1_000_000_000_000_000_000_000_000_000d).ToString("0.#") + " Oc";
+        // Nonillions
+        if(Math.Abs(n) < 1_000_000_000_000_000_000_000_000_000_000_000d) return (n / 1_000_000_000_000_000_000_000_000_000_000d).ToString("0.#") + " No";
+        // Decillions
+        if(Math.Abs(n) < 1_000_000_000_000_000_000_000_000_000_000_000_000d) return (n / 1_000_000_000_000_000_000_000_000_000_000_000d).ToString("0.#") + " Dc";
+        // Undecillions
+        if(Math.Abs(n) < 1_000_000_000_000_000_000_000_000_000_000_000_000_000d) return (n / 1_000_000_000_000_000_000_000_000_000_000_000_000d).ToString("0.#") + " UDc";
+        // Duodecillions +
+        return (n / 1_000_000_000_000_000_000_000_000_000_000_000_000_000d).ToString("0.#") + " DDc";
     }
     public static string FormatPercent(double value)
     {
         if (double.IsNaN(value)) return "0%";
         if (value < 1000) return $"{value:0}%";
-        if (value < 1_000_000) return $"{value / 1_000:0.##}K%";
-        if (value < 1_000_000_000) return $"{value / 1_000_000:0.##}M%";
-        if (value < 1_000_000_000_000) return $"{value / 1_000_000_000:0.##}B%";
-        return $"{value / 1_000_000_000_000:0.##}T%";
+        if (value < 1_000_000) return $"{value / 1_000:0.##} K%";
+        if (value < 1_000_000_000) return $"{value / 1_000_000:0.##} M%";
+        if (value < 1_000_000_000_000) return $"{value / 1_000_000_000:0.##} B%";
+        if (value < 1_000_000_000_000_000d) return $"{value / 1_000_000_000_000:0.##} T%";
+        if (value < 1_000_000_000_000_000_000d) return $"{value / 1_000_000_000_000_000d:0.##} Qa%";
+        if (value < 1_000_000_000_000_000_000_000d) return $"{value / 1_000_000_000_000_000_000d:0.##} Qi%";
+        if (value < 1_000_000_000_000_000_000_000_000d) return $"{value / 1_000_000_000_000_000_000_000d:0.##} Sx%";
+        if (value < 1_000_000_000_000_000_000_000_000_000d) return $"{value / 1_000_000_000_000_000_000_000_000d:0.##} Sp%";
+        if (value < 1_000_000_000_000_000_000_000_000_000_000d) return $"{value / 1_000_000_000_000_000_000_000_000_000d:0.##} Oc%";
+        if (value < 1_000_000_000_000_000_000_000_000_000_000_000d) return $"{value / 1_000_000_000_000_000_000_000_000_000_000d:0.##} No%";
+        if (value < 1_000_000_000_000_000_000_000_000_000_000_000_000d) return $"{value / 1_000_000_000_000_000_000_000_000_000_000_000d:0.##} Dc%";
+        if (value < 1_000_000_000_000_000_000_000_000_000_000_000_000_000d) return $"{value / 1_000_000_000_000_000_000_000_000_000_000_000_000d:0.##} UDc%";
+        return $"{value / 1_000_000_000_000_000_000_000_000_000_000_000_000_000d:0.##} DDc%";
     }
 }

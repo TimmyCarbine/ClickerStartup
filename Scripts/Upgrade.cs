@@ -12,7 +12,14 @@ public class Upgrade
     [JsonPropertyName("cost_curve")] public string CostCurve { get; set; } = "geometric"; // "geometric" | "linear" | "none"
     [JsonPropertyName("growth")] public double Growth { get; set; } = 1.15; // used for geometric
     [JsonPropertyName("step")] public double Step { get; set; } = 0; // used for linear
-
+    // === PREREQUISITES (optional) ===
+    // Show this upgrade only when another upgrade meets a condition
+    [JsonPropertyName("requires_id")] public string RequiresId { get; set; } // e.g., "marketing_1"
+    // If set, require the prerequisite to have at least this many purchases
+    [JsonPropertyName("requires_min")] public int? RequiresMin { get; set; }
+    // If "maxed", require the prerequisite to be at it's purchase limit
+    [JsonPropertyName("requires")] public string Requires { get; set; } // "maxed" | null
+    
     public int Purchases { get; set; } = 0;
 
     public bool IsLimited => Limit >= 0 && Purchases >= Limit;

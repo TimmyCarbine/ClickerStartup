@@ -8,6 +8,26 @@ public class UpgradeManager
 {
     public List<Upgrade> Upgrades { get; private set; } = new();
 
+    public Upgrade GetById(string id) => Upgrades.Find(x => x.Id == id);
+
+    public bool IsUnlocked(Upgrade u)
+    {
+        if (string.IsNullOrWhiteSpace(u.RequiresId)) return true;
+
+        var prereq = GetById(u.RequiresId);
+        if (prereq == null) return true;
+
+        if (string.Equals(u.Requires, "maxed", StringComparison.OrdinalIgnoreCase))
+        {
+            if (prereq.Limit < 0) return false;
+            return prereq.Purchases >= prereq.Limit;
+        }
+
+        if (u.RequiresMin.HasValue) return prereq.Purchases >= u.RequiresMin.Value;
+
+        return true;
+    }
+
     public bool TryBuy(Upgrade u, CurrencyManager cm)
     {
         if (u.IsLimited) return false;

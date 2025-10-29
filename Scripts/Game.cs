@@ -48,7 +48,7 @@ public partial class Game : Control
 
         _writeCodeButton = GetNode<Button>("RootMargin/RootVBox/BodyHBox/ActionsRoot/ActionsPanel/WriteCodeButton");
         _resetProgressButton = GetNode<Button>("RootMargin/RootVBox/ResetRoot/ResetPanel/ResetProgressButton");
-        _prestigeButton = GetNode<Button>("RootMargin/RootVBox/BodyHBox/ActionsRoot/ActionsPanel/PrestigeButton");
+        _prestigeButton = GetNode<Button>("RootMargin/RootVBox/ResetRoot/ResetPanel/PrestigeButton");
 
         _passiveTick = GetNode<Timer>("PassiveTick");
         _autosave = GetNode<Timer>("Autosave");
@@ -94,7 +94,9 @@ public partial class Game : Control
 
         foreach (var u in _um.Upgrades)
         {
-            var btn = new Button { CustomMinimumSize = new Vector2(260, 56) };
+            if (!_um.IsUnlocked(u)) continue;
+
+            var btn = new Button { CustomMinimumSize = new Vector2(260, 64) };
             UpdateUpgradeButton(btn, u);
             _buttonToUpgrade[btn] = u;
 
@@ -107,8 +109,9 @@ public partial class Game : Control
     {
         if (_um.TryBuy(u, _cm))
         {
+            BuildUpgradeUI();
             RefreshHud();
-            UpdateUpgradeButton(btn, u);
+            SaveService.SaveAll(SAVE_PATH, _cm, _um);
 
             // Optional: Purchase Sound / Save
         }
@@ -139,7 +142,7 @@ public partial class Game : Control
     {
         long preview = _cm.PreviewInvestorGain();
         string msg = preview > 0
-            ? $"You will gain +{preview} Investor Capital (+{preview * 5}% global). \nProceed?"
+            ? $"You will gain +{NumberFormatter.Format(preview)} Investor Capital (+{NumberFormatter.FormatPercent(preview * 5)} global). \nProceed?"
             : $"You need to exceed your record (${NumberFormatter.Format(_cm.MaxMoneyEarned)}) by $10,000.\nNext target: ${NumberFormatter.Format(_cm.NextIcTargetMoney)}";
         _prestigeConfirmDialog.DialogText = msg;
         _prestigeConfirmDialog.Show();

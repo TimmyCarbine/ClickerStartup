@@ -22,8 +22,11 @@ autostart = true
 
 [node name="RootMargin" type="MarginContainer" parent="."]
 layout_mode = 1
-offset_right = 561.0
-offset_bottom = 398.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 theme_override_constants/margin_left = 16
 theme_override_constants/margin_top = 16
 theme_override_constants/margin_right = 16
@@ -43,12 +46,10 @@ layout_mode = 2
 
 [node name="CurrencyHUD" type="HBoxContainer" parent="RootMargin/RootVBox/HUDRoot/HUD"]
 layout_mode = 1
-anchors_preset = 4
-anchor_top = 0.5
-anchor_bottom = 0.5
-offset_top = -15.0
-offset_right = 674.0
-offset_bottom = 15.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 12
 alignment = 2
@@ -56,23 +57,26 @@ alignment = 2
 [node name="MoneyLabel" type="Label" parent="RootMargin/RootVBox/HUDRoot/HUD/CurrencyHUD"]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
+size_flags_horizontal = 3
 text = "Money: 0"
-horizontal_alignment = 2
 
 [node name="LocLabel" type="Label" parent="RootMargin/RootVBox/HUDRoot/HUD/CurrencyHUD"]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
+size_flags_horizontal = 3
 text = "LoC: 0"
-horizontal_alignment = 2
 
 [node name="IncomeLabel" type="Label" parent="RootMargin/RootVBox/HUDRoot/HUD/CurrencyHUD"]
-custom_minimum_size = Vector2(250, 0)
+custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
+size_flags_horizontal = 3
 text = "Income/sec: 0"
-horizontal_alignment = 2
 
 [node name="InvestorLabel" type="Label" parent="RootMargin/RootVBox/HUDRoot/HUD/CurrencyHUD"]
+custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
+size_flags_horizontal = 3
+horizontal_alignment = 2
 
 [node name="BodyHBox" type="HBoxContainer" parent="RootMargin/RootVBox"]
 custom_minimum_size = Vector2(0, 300)
@@ -82,6 +86,7 @@ theme_override_constants/separation = 16
 
 [node name="ActionsRoot" type="PanelContainer" parent="RootMargin/RootVBox/BodyHBox"]
 layout_mode = 2
+size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="ActionsPanel" type="VBoxContainer" parent="RootMargin/RootVBox/BodyHBox/ActionsRoot"]
@@ -101,14 +106,6 @@ tooltip_text = "Write lines of code to earn money"
 theme = SubResource("Theme_r150o")
 text = "Write Code"
 
-[node name="PrestigeButton" type="Button" parent="RootMargin/RootVBox/BodyHBox/ActionsRoot/ActionsPanel"]
-custom_minimum_size = Vector2(200, 64)
-layout_mode = 2
-tooltip_text = "Sells company for a boost in Investor Capital (Prestige)"
-theme = SubResource("Theme_r150o")
-disabled = true
-text = "Sell Company"
-
 [node name="UpgradesRoot" type="PanelContainer" parent="RootMargin/RootVBox/BodyHBox"]
 layout_mode = 2
 size_flags_horizontal = 3
@@ -119,6 +116,8 @@ horizontal_scroll_mode = 0
 
 [node name="UpgradesPanel" type="VBoxContainer" parent="RootMargin/RootVBox/BodyHBox/UpgradesRoot/UpgradesScroll"]
 layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 theme_override_constants/separation = 8
 
 [node name="UpgradesLabel" type="Label" parent="RootMargin/RootVBox/BodyHBox/UpgradesRoot/UpgradesScroll/UpgradesPanel"]
@@ -131,6 +130,19 @@ layout_mode = 2
 
 [node name="ResetPanel" type="HBoxContainer" parent="RootMargin/RootVBox/ResetRoot"]
 layout_mode = 2
+
+[node name="PrestigeButton" type="Button" parent="RootMargin/RootVBox/ResetRoot/ResetPanel"]
+custom_minimum_size = Vector2(200, 64)
+layout_direction = 2
+layout_mode = 2
+tooltip_text = "Sells company for a boost in Investor Capital (Prestige)"
+theme = SubResource("Theme_r150o")
+disabled = true
+text = "Sell Company"
+
+[node name="Control" type="Control" parent="RootMargin/RootVBox/ResetRoot/ResetPanel"]
+layout_mode = 2
+size_flags_horizontal = 3
 
 [node name="ResetProgressButton" type="Button" parent="RootMargin/RootVBox/ResetRoot/ResetPanel"]
 layout_mode = 2
