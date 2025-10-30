@@ -28,17 +28,25 @@ public class UpgradeManager
         return true;
     }
 
-    public bool TryBuy(Upgrade u, CurrencyManager cm)
+    public bool TryBuy(Upgrade u, CurrencyManager cm, int requestedCount, out int boughtCount)
     {
-        if (u.IsLimited) return false;
+        boughtCount = 0;
+        if (u.IsLimited && u.RemainingPurchases <= 0) return false;
 
-        var cost = u.CurrentCost;
-        if (!cm.TrySpend(cost)) return false;
+        int count = requestedCount < 0 ? u.GetMaxAffordable(cm.Money)
+                                    : Math.Min(requestedCount, u.RemainingPurchases);
+        if (count <= 0) return false;
 
-        u.Purchases += 1;
-        u.ApplyCount(cm, 1);
+        double total = u.TotalCostFor(count);
+        if (!cm.TrySpend(total)) return false;
+
+        u.Purchases += count;
+        u.ApplyCount(cm, count);
+        boughtCount = count;
         return true;
     }
+
+    public bool TryBuy(Upgrade u, CurrencyManager cm) => TryBuy(u, cm, 1, out _);
 
     public bool LoadUpgrades(string path)
     {
@@ -63,8 +71,5 @@ public class UpgradeManager
         }
     }
 
-    public void ReapplyAll(CurrencyManager cm)
-    {
-        cm.RebuildStatsFrom(Upgrades);
-    }
+    public void ReapplyAll(CurrencyManager cm) => cm.RebuildStatsFrom(Upgrades);
 }

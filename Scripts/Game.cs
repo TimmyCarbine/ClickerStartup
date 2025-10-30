@@ -18,20 +18,16 @@ public partial class Game : Control
     // === UI REFERENCES ===
     private VBoxContainer _upgradePanel;
 
-    private Label _moneyLabel;
-    private Label _locLabel;
-    private Label _incomeLabel;
-    private Label _investorLabel;
+    private Label _moneyLabel, _locLabel, _incomeLabel, _investorLabel;
 
-    private Button _writeCodeButton;
-    private Button _resetProgressButton;
-    private Button _prestigeButton;
+    private Button _writeCodeButton, _resetProgressButton, _prestigeButton;
+    private Button _buy1Button, _buy10Button, _buy100Button, _buyMaxButton;
+    private ButtonGroup _buyGroup;
+    private enum BuyMode { One = 1, Ten = 10, Hundred = 100, Max = -1 }
+    private BuyMode _buyMode = BuyMode.One;
+    private Timer _passiveTick, _autosave;
 
-    private Timer _passiveTick;
-    private Timer _autosave;
-
-    private ConfirmationDialog _resetConfirmDialog;
-    private ConfirmationDialog _prestigeConfirmDialog;
+    private ConfirmationDialog _resetConfirmDialog, _prestigeConfirmDialog;
     private AcceptDialog _prestigeSummaryDialog;
 
 
@@ -50,6 +46,20 @@ public partial class Game : Control
         _resetProgressButton = GetNode<Button>("RootMargin/RootVBox/ResetRoot/ResetPanel/ResetProgressButton");
         _prestigeButton = GetNode<Button>("RootMargin/RootVBox/ResetRoot/ResetPanel/PrestigeButton");
 
+        _buy1Button   = GetNode<Button>("RootMargin/RootVBox/BodyHBox/UpgradesRoot/UpgradesScroll/UpgradesPanel/UpgradesHeader/BuyModeBar/Buy1Button");
+        _buy10Button  = GetNode<Button>("RootMargin/RootVBox/BodyHBox/UpgradesRoot/UpgradesScroll/UpgradesPanel/UpgradesHeader/BuyModeBar/Buy10Button");
+        _buy100Button = GetNode<Button>("RootMargin/RootVBox/BodyHBox/UpgradesRoot/UpgradesScroll/UpgradesPanel/UpgradesHeader/BuyModeBar/Buy100Button");
+        _buyMaxButton = GetNode<Button>("RootMargin/RootVBox/BodyHBox/UpgradesRoot/UpgradesScroll/UpgradesPanel/UpgradesHeader/BuyModeBar/BuyMaxButton");
+
+        _buyGroup = new ButtonGroup();
+        foreach (var b in new[] { _buy1Button, _buy10Button, _buy100Button, _buyMaxButton })
+        {
+            b.ToggleMode = true;
+            b.ButtonGroup = _buyGroup;
+        }
+
+        _buy1Button.ButtonPressed = true;
+
         _passiveTick = GetNode<Timer>("PassiveTick");
         _autosave = GetNode<Timer>("Autosave");
 
@@ -65,6 +75,11 @@ public partial class Game : Control
 
         _prestigeButton.Pressed += OnPrestigePressed;
         _prestigeConfirmDialog.Confirmed += OnPrestigeConfirmed;
+
+        _buy1Button.Pressed   += () => { _buyMode = BuyMode.One;     RefreshHud(); };
+        _buy10Button.Pressed  += () => { _buyMode = BuyMode.Ten;     RefreshHud(); };
+        _buy100Button.Pressed += () => { _buyMode = BuyMode.Hundred; RefreshHud(); };
+        _buyMaxButton.Pressed  += () => { _buyMode = BuyMode.Max;     RefreshHud(); };
 
         // Wire timers
         _passiveTick.Timeout += OnPassiveTick;
@@ -107,8 +122,18 @@ public partial class Game : Control
 
     private void OnUpgradePressed(Upgrade u, Button btn)
     {
-        if (_um.TryBuy(u, _cm))
+        int request = _buyMode switch
         {
+            BuyMode.One     => 1,
+            BuyMode.Ten     => 10,
+            BuyMode.Hundred => 100,
+            BuyMode.Max     => -1, // sentinel -> "max"
+            _ => 1
+        };
+
+        if (_um.TryBuy(u, _cm, request, out var bought))
+        {
+            // Rebuild to reveal newly unlocked tiers & update costs
             BuildUpgradeUI();
             RefreshHud();
             SaveService.SaveAll(SAVE_PATH, _cm, _um);
@@ -211,18 +236,41 @@ public partial class Game : Control
 
     private void UpdateUpgradeButton(Button btn, Upgrade u)
     {
-        var canAfford = _cm.Money >= u.CurrentCost;
+        int request = _buyMode switch
+        {
+            BuyMode.One => Math.Min(1, u.RemainingPurchases),
+            BuyMode.Ten => Math.Min(10, u.RemainingPurchases),
+            BuyMode.Hundred => Math.Min(100, u.RemainingPurchases),
+            BuyMode.Max => u.GetMaxAffordable(_cm.Money),
+            _ => 1
+        };
 
-        if (u.IsLimited)
+        // If limited and out, bail early
+        if (u.IsLimited && u.RemainingPurchases <= 0)
         {
             btn.Text = $"{u.Name} {FormatUpgradeCount(u)} (Max)";
             btn.Disabled = true;
+            return;
         }
-        else
+
+        // MAX UX: if request==0, show the next single price instead of a blank
+        if (_buyMode == BuyMode.Max && request <= 0)
         {
-            btn.Text = $"{u.Name} {FormatUpgradeCount(u)} - {FormatUpgradeCost(u.CurrentCost)}";
-            btn.Disabled = !canAfford;
+            double nextCost = u.TotalCostFor(1); // same as u.CurrentCost
+            btn.Text = $"{u.Name} {FormatUpgradeCount(u)}  x0 (MAX) — Next: {FormatUpgradeCost(nextCost)}";
+            btn.Disabled = true;
+            if (!string.IsNullOrEmpty(u.Description))
+                btn.TooltipText = u.Description;
+            return;
         }
+
+        // Normal / MAX with request>0
+        double total = u.TotalCostFor(request);
+        bool canAfford = total > 0 && _cm.Money >= total;
+
+        string qty = (_buyMode == BuyMode.Max) ? $"x{request} (MAX)" : $"x{request}";
+        btn.Text = $"{u.Name} {FormatUpgradeCount(u)}  {qty} - {FormatUpgradeCost(total)}";
+        btn.Disabled = !canAfford;
 
         if (!string.IsNullOrEmpty(u.Description))
             btn.TooltipText = u.Description;
