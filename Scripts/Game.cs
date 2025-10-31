@@ -8,7 +8,6 @@ public partial class Game : Control
 {
     // === CONSTANTS ===
     private const string SAVE_PATH = "user://clicker_startup_save.json";
-    private const int AUTOSAVE_INTERVAL_SEC = 30;
 
     // === STATE ===
     private AppState _app;
@@ -21,15 +20,16 @@ public partial class Game : Control
 
     private Label _moneyLabel, _locLabel, _incomeLabel, _investorLabel;
     private TextureButton _settingsButton;
-    private Button _writeCodeButton, _resetProgressButton, _prestigeButton;
+    private Button _writeCodeButton, _prestigeButton;
     private Button _buy1Button, _buy10Button, _buy100Button, _buyMaxButton;
     private ButtonGroup _buyGroup;
     private enum BuyMode { One = 1, Ten = 10, Hundred = 100, Max = -1 }
     private BuyMode _buyMode = BuyMode.One;
     private Timer _passiveTick, _autosave;
 
-    private ConfirmationDialog _resetConfirmDialog, _prestigeConfirmDialog;
+    private ConfirmationDialog _prestigeConfirmDialog;
     private AcceptDialog _prestigeSummaryDialog;
+    private ProgressBar _prestigeProgressBar;
 
 
 
@@ -44,8 +44,7 @@ public partial class Game : Control
         _investorLabel = GetNode<Label>("RootMargin/RootVBox/HUDRoot/HUD/CurrencyHUD/InvestorLabel");
 
         _writeCodeButton = GetNode<Button>("RootMargin/RootVBox/BodyHBox/ActionsRoot/ActionsPanel/WriteCodeButton");
-        _resetProgressButton = GetNode<Button>("RootMargin/RootVBox/ResetRoot/ResetPanel/ResetProgressButton");
-        _prestigeButton = GetNode<Button>("RootMargin/RootVBox/ResetRoot/ResetPanel/PrestigeButton");
+        _prestigeButton = GetNode<Button>("RootMargin/RootVBox/PrestigeRoot/PrestigeHB/PrestigeButton");
         _settingsButton = GetNode<TextureButton>("RootMargin/RootVBox/HUDRoot/HUD/CurrencyHUD/SettingsButton");
 
         _buy1Button   = GetNode<Button>("RootMargin/RootVBox/BodyHBox/UpgradesRoot/UpgradesScroll/UpgradesPanel/UpgradesHeader/BuyModeBar/Buy1Button");
@@ -65,9 +64,12 @@ public partial class Game : Control
         _passiveTick = GetNode<Timer>("PassiveTick");
         _autosave = GetNode<Timer>("Autosave");
 
-        _resetConfirmDialog = GetNode<ConfirmationDialog>("ResetConfirmDialog");
         _prestigeConfirmDialog = GetNode<ConfirmationDialog>("PrestigeConfirmDialog");
         _prestigeSummaryDialog = GetNode<AcceptDialog>("PrestigeSummaryDialog");
+
+        _prestigeProgressBar = GetNode<ProgressBar>("RootMargin/RootVBox/PrestigeRoot/PrestigeHB/PrestigeProgressRoot/PrestigeProgressBar");
+        _prestigeProgressBar.MinValue = 0;
+        _prestigeProgressBar.MaxValue = 1;
 
         // === APPSTATE CONNECTION ===
         _app = GetNode<AppState>("/root/AppState");
@@ -79,9 +81,6 @@ public partial class Game : Control
         // Wire UI events
         _writeCodeButton.Pressed += OnWriteCodePressed;
         _settingsButton.Pressed += OpenSettings;
-
-        _resetProgressButton.Pressed += () => _resetConfirmDialog.Show();
-        _resetConfirmDialog.Confirmed += OnResetConfirmed;
 
         _prestigeButton.Pressed += OnPrestigePressed;
         _prestigeConfirmDialog.Confirmed += OnPrestigeConfirmed;
@@ -106,14 +105,12 @@ public partial class Game : Control
         var loadedSaveData = SaveService.LoadAll(SAVE_PATH, _cm, _um);
         RefreshHud();
 
-        // Ensure autosave is at the interval we expect (optimal)
-      //  _autosave.WaitTime = AUTOSAVE_INTERVAL_SEC;
+        var cmd = _app.ConsumeCommand();
+        if (cmd == AppState.PendingCommand.ResetAll) PerformFullReset();
 
         // Save on quit
         TreeExiting += OnTreeExiting;
     }
-
-    
 
     private void BuildUpgradeUI()
     {
@@ -215,25 +212,6 @@ public partial class Game : Control
         SaveService.SaveAll(SAVE_PATH, _cm, _um);
     }
 
-    private void OnResetConfirmed()
-    {
-        SaveService.Delete(SAVE_PATH);
-        _cm.ResetAll();
-
-        foreach (var u in _um.Upgrades) u.Purchases = 0;
-
-        _um.ReapplyAll(_cm);
-        foreach (var child in _upgradePanel.GetChildren())
-            if (child is Button) child.QueueFree();
-
-        BuildUpgradeUI();
-        RefreshHud();
-
-        SaveService.SaveAll(SAVE_PATH, _cm, _um);
-
-        GD.Print("[Reset] Progress reset to defaults and save deleted.");
-    }
-
     private string FormatUpgradeCount(Upgrade u)
     {
         return u.Limit >= 0 ? $"{u.Purchases}/{u.Limit}" : $"{u.Purchases}/∞";
@@ -304,6 +282,13 @@ public partial class Game : Control
             : $"Sell Company (Next: {NumberFormatter.Format(_cm.NextIcTargetMoney)})";
 
         _investorLabel.Text = $"IC: {NumberFormatter.Format(_cm.InvestorCapital)} (+{NumberFormatter.FormatPercent((_cm.GlobalMult - 1) * 100)})";
+
+        double excess = Math.Max(0.0, _cm.Money - _cm.MaxMoneyEarned);
+        double denom = _cm.NextIcTargetMoney - _cm.MaxMoneyEarned;
+        double pct = 0.0;
+        if (!double.IsInfinity(_cm.NextIcTargetMoney) && denom > 0)
+            pct = Math.Clamp(excess / denom, 0.0, 1.0);
+        _prestigeProgressBar.Value = pct;
     }
 
     public override void _UnhandledInput(InputEvent @event)
@@ -370,6 +355,21 @@ public partial class Game : Control
                 GD.Print("[Autosave] Disabled.");
             }
         }
+    }
+
+    public void PerformFullReset()
+    {
+        SaveService.Delete(SAVE_PATH);
+        _cm.ResetAll();
+        foreach (var u in _um.Upgrades) u.Purchases = 0;
+        _um.ReapplyAll(_cm);
+        foreach (var child in _upgradePanel.GetChildren())
+            if (child is Button) child.QueueFree();
+        BuildUpgradeUI();
+        RefreshHud();
+
+        SaveService.SaveAll(SAVE_PATH, _cm, _um);
+        GD.Print("[Reset] Full reset performed");
     }
 
     private void OnTreeExiting()

@@ -1,9 +1,15 @@
-[gd_scene load_steps=4 format=3 uid="uid://h4sc1spmei8p"]
+[gd_scene load_steps=6 format=3 uid="uid://h4sc1spmei8p"]
 
 [ext_resource type="Script" uid="uid://bqmsshf15v3cv" path="res://Scripts/Game.cs" id="1_r150o"]
 [ext_resource type="Texture2D" uid="uid://cghbq33bwopav" path="res://Art/Icons/UI/Settings_Normal.png" id="2_idj7w"]
 
 [sub_resource type="Theme" id="Theme_r150o"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_idj7w"]
+bg_color = Color(0.12941177, 0.12941177, 0.12941177, 0.44705883)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kln2b"]
+bg_color = Color(0.43137255, 0, 0.16470589, 1)
 
 [node name="Main" type="Control"]
 layout_mode = 3
@@ -163,13 +169,13 @@ theme_override_font_sizes/font_size = 12
 toggle_mode = true
 text = "MAX"
 
-[node name="ResetRoot" type="PanelContainer" parent="RootMargin/RootVBox"]
+[node name="PrestigeRoot" type="PanelContainer" parent="RootMargin/RootVBox"]
 layout_mode = 2
 
-[node name="ResetPanel" type="HBoxContainer" parent="RootMargin/RootVBox/ResetRoot"]
+[node name="PrestigeHB" type="HBoxContainer" parent="RootMargin/RootVBox/PrestigeRoot"]
 layout_mode = 2
 
-[node name="PrestigeButton" type="Button" parent="RootMargin/RootVBox/ResetRoot/ResetPanel"]
+[node name="PrestigeButton" type="Button" parent="RootMargin/RootVBox/PrestigeRoot/PrestigeHB"]
 custom_minimum_size = Vector2(200, 64)
 layout_direction = 2
 layout_mode = 2
@@ -178,20 +184,20 @@ theme = SubResource("Theme_r150o")
 disabled = true
 text = "Sell Company"
 
-[node name="Control" type="Control" parent="RootMargin/RootVBox/ResetRoot/ResetPanel"]
+[node name="PrestigeProgressRoot" type="PanelContainer" parent="RootMargin/RootVBox/PrestigeRoot/PrestigeHB"]
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_vertical = 4
 
-[node name="ResetProgressButton" type="Button" parent="RootMargin/RootVBox/ResetRoot/ResetPanel"]
+[node name="PrestigeProgressBar" type="ProgressBar" parent="RootMargin/RootVBox/PrestigeRoot/PrestigeHB/PrestigeProgressRoot"]
 layout_mode = 2
-text = "Reset Progress"
-
-[node name="ResetConfirmDialog" type="ConfirmationDialog" parent="."]
-title = "Reset Progress"
-initial_position = 1
-keep_title_visible = false
-content_scale_aspect = 1
-dialog_text = "This will delete your save and reset all progress. Continue?"
+size_flags_vertical = 1
+theme_override_colors/font_color = Color(0.817521, 0.8175213, 0.8175217, 1)
+theme_override_colors/font_outline_color = Color(0.07683582, 0.07683582, 0.07683582, 0.8627451)
+theme_override_constants/outline_size = 8
+theme_override_styles/background = SubResource("StyleBoxFlat_idj7w")
+theme_override_styles/fill = SubResource("StyleBoxFlat_kln2b")
+value = 50.0
 
 [node name="PrestigeConfirmDialog" type="ConfirmationDialog" parent="."]
 title = "Sell Company"

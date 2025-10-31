@@ -7,10 +7,13 @@ public static class NumberFormatter
     public static Mode CurrentMode { get; set; } = Mode.Short;
 
     public static string Format(double v) => CurrentMode == Mode.Scientific ? FormatSci(v) : FormatShort(v);
-    public static string FormatPercent(double v) => CurrentMode == Mode.Scientific ? FormatSciPercent(v) : FormatPercent(v);
+    public static string FormatPercent(double v) => CurrentMode == Mode.Scientific ? FormatSciPercent(v) : FormatShortPercent(v);
 
     public static string FormatShort(double n)
     {
+        if (double.IsNaN(n)) return "0";
+        if (double.IsPositiveInfinity(n)) return "∞";
+        if (double.IsNegativeInfinity(n)) return "-∞";
         // Whole numbers up to 999
         if (Math.Abs(n) < 1_000d) return n.ToString("0");
         // Thousands
@@ -43,6 +46,8 @@ public static class NumberFormatter
     public static string FormatShortPercent(double value)
     {
         if (double.IsNaN(value)) return "0 %";
+        if (double.IsPositiveInfinity(value)) return "∞ %";
+        if (double.IsNegativeInfinity(value)) return "-∞ %";
         if (value < 1000) return $"{value:0} %";
         if (value < 1_000_000) return $"{value / 1_000:0.##} K %";
         if (value < 1_000_000_000) return $"{value / 1_000_000:0.##} M %";
@@ -58,13 +63,19 @@ public static class NumberFormatter
         if (value < 1_000_000_000_000_000_000_000_000_000_000_000_000_000d) return $"{value / 1_000_000_000_000_000_000_000_000_000_000_000_000d:0.##} UDc %";
         return $"{value / 1_000_000_000_000_000_000_000_000_000_000_000_000_000d:0.##} DDc %";
     }
-    private static string FormatSci(double v)
+    private static string FormatSci(double n)
     {
-        if (Math.Abs(v) < 1000) return v.ToString("0.##");
-        return v.ToString("0.###e+0");
+        if (double.IsNaN(n)) return "0";
+        if (double.IsPositiveInfinity(n)) return "∞";
+        if (double.IsNegativeInfinity(n)) return "-∞";
+        if (Math.Abs(n) < 1000) return n.ToString("0.##");
+        return n.ToString("0.###e+0");
     }
     private static string FormatSciPercent(double value)
     {
+        if (double.IsNaN(value)) return "0 %";
+        if (double.IsPositiveInfinity(value)) return "∞ %";
+        if (double.IsNegativeInfinity(value)) return "-∞ %";
         if (value < 1000) return $"{value:0} %";
         return value.ToString("0.###e+0 %");
     }

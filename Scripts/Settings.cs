@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Threading.Tasks;
 using static AppState;
 
 public partial class Settings : Control
@@ -7,9 +8,8 @@ public partial class Settings : Control
     private OptionButton _formatOption;
     private CheckButton _autosaveCheck;
     private LineEdit _autosaveLine;
-    private Button _applyBtn;
-    private Button _backBtn;
-
+    private Button _resetProgressBtn, _quitToMainBtn, _applyBtn, _backBtn;
+    private ConfirmationDialog _resetConfirmDialog;
     private AppState _app;
     private PlayerSettings _working;
     private bool _dirty;
@@ -21,12 +21,16 @@ public partial class Settings : Control
         _formatOption = GetNode<OptionButton>("MainVB/SettingsVB/NumberFormatHB/NumberFormatOptionButton");
         _autosaveCheck = GetNode<CheckButton>("MainVB/SettingsVB/AutosaveHB/AutosaveOptionCheckButton");
         _autosaveLine = GetNode<LineEdit>("MainVB/SettingsVB/AutosaveHB/AutosaveOptionLineEdit");
+        _resetProgressBtn = GetNode<Button>("MainVB/SettingsVB/ResetHB/ResetProgressButton");
+        _quitToMainBtn = GetNode<Button>("MainVB/NavigationBar/QuitToMainButton");
         _applyBtn = GetNode<Button>("MainVB/NavigationBar/ApplyButton");
         _backBtn = GetNode<Button>("MainVB/NavigationBar/BackButton");
 
         _formatOption.Clear();
         _formatOption.AddItem("Short", (int)NumberFormatMode.Short);
         _formatOption.AddItem("Scientific", (int)NumberFormatMode.Scientific);
+
+        _resetConfirmDialog = GetNode<ConfirmationDialog>("ResetConfirmDialog");
 
         var persisted = SettingsStorage.LoadOrDefault();
         _working = new PlayerSettings
@@ -45,8 +49,15 @@ public partial class Settings : Control
         _formatOption.ItemSelected += idx => { _working.NumberFormat = (NumberFormatMode)idx; MarkDirty(); };
         _autosaveCheck.Toggled += on => { _working.AutosaveEnabled = on; _autosaveLine.Editable = on; MarkDirty(); };
         _autosaveLine.TextChanged += (string t) => { MarkDirty(); };
+        _resetProgressBtn.Pressed += () => _resetConfirmDialog.Show();
+        _quitToMainBtn.Pressed += () => GetTree().ChangeSceneToFile("res://Scenes/MainMenu.tscn");;
         _applyBtn.Pressed += OnApplyPressed;
         _backBtn.Pressed += OnBackPressed;
+
+        _resetProgressBtn.Pressed += () => _resetConfirmDialog.Show();
+        _resetConfirmDialog.Confirmed += OnResetConfirmed;
+
+        _quitToMainBtn.Visible = _app.ReturnScenePath == "res://Scenes/Main.tscn";
     }
 
     private void MarkDirty()
@@ -68,14 +79,22 @@ public partial class Settings : Control
         GD.Print("[Settings] Applied");
     }
 
-    private async void OnBackPressed()
+    private void OnBackPressed()
     {
         if (_dirty) GD.Print("[Settings] Unsaved changes discarded");
 
         var path = _app.ReturnScenePath;
-        if (!string.IsNullOrEmpty(path))
-            GetTree().ChangeSceneToFile(path);
-        else
-            await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+        if (!string.IsNullOrEmpty(path)) path = "res://Scenes/Main.tscn";
+        var tree = GetTree();
+        if(tree != null) tree.ChangeSceneToFile(path);
+    }
+
+    private void OnResetConfirmed()
+    {
+        _app.NextCommand = AppState.PendingCommand.ResetAll;
+        _app.ReturnScenePath = "res://Scenes/Main.tscn";
+
+        var tree = GetTree();
+        if(tree != null) tree.ChangeSceneToFile("res://Scenes/Main.tscn");
     }
 }

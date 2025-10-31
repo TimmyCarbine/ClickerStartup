@@ -74,10 +74,26 @@ drag_and_drop_selection_enabled = false
 layout_mode = 2
 text = "sec"
 
+[node name="ResetHB" type="HBoxContainer" parent="MainVB/SettingsVB"]
+layout_mode = 2
+
+[node name="ResetProgressButton" type="Button" parent="MainVB/SettingsVB/ResetHB"]
+layout_mode = 2
+text = "Reset Progress"
+
 [node name="NavigationBar" type="HBoxContainer" parent="MainVB"]
 layout_mode = 2
 theme_override_constants/separation = 20
 alignment = 2
+
+[node name="QuitToMainButton" type="Button" parent="MainVB/NavigationBar"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+text = "Quit to Main Menu"
+
+[node name="PanelContainer" type="PanelContainer" parent="MainVB/NavigationBar"]
+layout_mode = 2
+size_flags_horizontal = 3
 
 [node name="ApplyButton" type="Button" parent="MainVB/NavigationBar"]
 custom_minimum_size = Vector2(200, 0)
@@ -89,3 +105,13 @@ text = "Apply"
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 text = "Back"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MainVB"]
+layout_mode = 2
+
+[node name="ResetConfirmDialog" type="ConfirmationDialog" parent="."]
+title = "Reset Progress"
+initial_position = 1
+keep_title_visible = false
+content_scale_aspect = 1
+dialog_text = "This will delete your save and reset all progress. Continue?"

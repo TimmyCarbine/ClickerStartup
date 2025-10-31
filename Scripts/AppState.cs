@@ -4,9 +4,16 @@ using System;
 public partial class AppState : Node
 {
     public string ReturnScenePath { get; set; } = "res://Scenes/MainMenu.tscn";
-
     public enum NumberFormatMode { Short, Scientific }
+    public enum PendingCommand { None, ResetAll }
+    public PendingCommand NextCommand { get; set; } = PendingCommand.None;
 
+    public PendingCommand ConsumeCommand()
+    {
+        var c = NextCommand;
+        NextCommand = PendingCommand.None;
+        return c;
+    }
     public class PlayerSettings
     {
         public NumberFormatMode NumberFormat { get; set; } = NumberFormatMode.Short;
