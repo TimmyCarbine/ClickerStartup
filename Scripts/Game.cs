@@ -11,6 +11,7 @@ public partial class Game : Control
     private const int AUTOSAVE_INTERVAL_SEC = 30;
 
     // === STATE ===
+    private AppState _app;
     private CurrencyManager _cm = new CurrencyManager();
     private UpgradeManager _um = new UpgradeManager();
     private readonly Dictionary<Button, Upgrade> _buttonToUpgrade = new();
@@ -19,7 +20,7 @@ public partial class Game : Control
     private VBoxContainer _upgradePanel;
 
     private Label _moneyLabel, _locLabel, _incomeLabel, _investorLabel;
-
+    private TextureButton _settingsButton;
     private Button _writeCodeButton, _resetProgressButton, _prestigeButton;
     private Button _buy1Button, _buy10Button, _buy100Button, _buyMaxButton;
     private ButtonGroup _buyGroup;
@@ -45,6 +46,7 @@ public partial class Game : Control
         _writeCodeButton = GetNode<Button>("RootMargin/RootVBox/BodyHBox/ActionsRoot/ActionsPanel/WriteCodeButton");
         _resetProgressButton = GetNode<Button>("RootMargin/RootVBox/ResetRoot/ResetPanel/ResetProgressButton");
         _prestigeButton = GetNode<Button>("RootMargin/RootVBox/ResetRoot/ResetPanel/PrestigeButton");
+        _settingsButton = GetNode<TextureButton>("RootMargin/RootVBox/HUDRoot/HUD/CurrencyHUD/SettingsButton");
 
         _buy1Button   = GetNode<Button>("RootMargin/RootVBox/BodyHBox/UpgradesRoot/UpgradesScroll/UpgradesPanel/UpgradesHeader/BuyModeBar/Buy1Button");
         _buy10Button  = GetNode<Button>("RootMargin/RootVBox/BodyHBox/UpgradesRoot/UpgradesScroll/UpgradesPanel/UpgradesHeader/BuyModeBar/Buy10Button");
@@ -67,8 +69,16 @@ public partial class Game : Control
         _prestigeConfirmDialog = GetNode<ConfirmationDialog>("PrestigeConfirmDialog");
         _prestigeSummaryDialog = GetNode<AcceptDialog>("PrestigeSummaryDialog");
 
+        // === APPSTATE CONNECTION ===
+        _app = GetNode<AppState>("/root/AppState");
+
+        // Apply persisted settings on game start
+        var persisted = SettingsStorage.LoadOrDefault();
+        ApplySettingsToGame(persisted);
+
         // Wire UI events
         _writeCodeButton.Pressed += OnWriteCodePressed;
+        _settingsButton.Pressed += OpenSettings;
 
         _resetProgressButton.Pressed += () => _resetConfirmDialog.Show();
         _resetConfirmDialog.Confirmed += OnResetConfirmed;
@@ -85,6 +95,9 @@ public partial class Game : Control
         _passiveTick.Timeout += OnPassiveTick;
         _autosave.Timeout += OnAutosave;
 
+        // Subscribe (use named handler, not lambda)
+        _app.SettingsChanged += OnAppSettingsChanged;
+
         // Load upgrades
         var loadedUpgrades = _um.LoadUpgrades("res://Data/upgrades.json");
         BuildUpgradeUI();
@@ -94,11 +107,13 @@ public partial class Game : Control
         RefreshHud();
 
         // Ensure autosave is at the interval we expect (optimal)
-        _autosave.WaitTime = AUTOSAVE_INTERVAL_SEC;
+      //  _autosave.WaitTime = AUTOSAVE_INTERVAL_SEC;
 
         // Save on quit
         TreeExiting += OnTreeExiting;
     }
+
+    
 
     private void BuildUpgradeUI()
     {
@@ -200,11 +215,6 @@ public partial class Game : Control
         SaveService.SaveAll(SAVE_PATH, _cm, _um);
     }
 
-    private void OnTreeExiting()
-    {
-        SaveService.SaveAll(SAVE_PATH, _cm, _um);
-    }
-
     private void OnResetConfirmed()
     {
         SaveService.Delete(SAVE_PATH);
@@ -294,5 +304,76 @@ public partial class Game : Control
             : $"Sell Company (Next: {NumberFormatter.Format(_cm.NextIcTargetMoney)})";
 
         _investorLabel.Text = $"IC: {NumberFormatter.Format(_cm.InvestorCapital)} (+{NumberFormatter.FormatPercent((_cm.GlobalMult - 1) * 100)})";
+    }
+
+    public override void _UnhandledInput(InputEvent @event)
+    {
+        if (@event.IsActionPressed("ui_cancel")) OpenSettings();
+    }
+
+    private void OpenSettings()
+    {
+        var app = GetNode<AppState>("/root/AppState");
+        app.ReturnScenePath = "res://Scenes/Main.tscn";
+        GetTree().ChangeSceneToFile("res://Scenes/Settings.tscn");
+    }
+    
+    // === SETTINGS HANDLING ===
+    private void OnAppSettingsChanged()
+    {
+        // Node may be exiting; guard before touching UI
+        if (!IsHudAlive()) return;
+        ApplySettingsToGame(_app.Settings);
+    }
+
+    public override void _ExitTree()
+    {
+        // Unsubscribe so we don't get signals after UI nodes are freed
+        if (_app != null)
+        {
+            try { _app.SettingsChanged -= OnAppSettingsChanged; } catch { /* ignore */ }
+        }
+    }
+
+    // Guard: ensures we don't write to freed labels
+    private bool IsHudAlive()
+    {
+        return GodotObject.IsInstanceValid(_moneyLabel)
+            && GodotObject.IsInstanceValid(_locLabel)
+            && GodotObject.IsInstanceValid(_incomeLabel);
+    }
+
+    // Apply user settings dynamically
+    private void ApplySettingsToGame(AppState.PlayerSettings st)
+    {
+        // number format
+        NumberFormatter.CurrentMode =
+            (st.NumberFormat == AppState.NumberFormatMode.Scientific)
+            ? NumberFormatter.Mode.Scientific
+            : NumberFormatter.Mode.Short;
+
+        if (IsHudAlive()) RefreshHud();
+
+        // autosave
+        if (GodotObject.IsInstanceValid(_autosave))
+        {
+            _autosave.Stop();
+            if (st.AutosaveEnabled)
+            {
+                _autosave.WaitTime = Math.Max(1.0, st.AutosaveIntervalSeconds);
+                _autosave.OneShot = false;
+                _autosave.Start(); // ← restarts with the new WaitTime
+                GD.Print($"[Autosave] Enabled. WaitTime={_autosave.WaitTime:0.##}s");
+            }
+            else
+            {
+                GD.Print("[Autosave] Disabled.");
+            }
+        }
+    }
+
+    private void OnTreeExiting()
+    {
+        SaveService.SaveAll(SAVE_PATH, _cm, _um);
     }
 }

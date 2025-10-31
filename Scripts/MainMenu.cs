@@ -1,8 +1,4 @@
 using Godot;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using Label = Godot.Label;
 
 public partial class MainMenu : Control
 {
@@ -14,12 +10,14 @@ public partial class MainMenu : Control
         _settingsButton = GetNode<Button>("Main/SettingsButton");
         _quitButton = GetNode<Button>("Main/QuitButton");
 
-        _startButton.Pressed += OnStartPressed;
-        _settingsButton.Pressed += OnSettingsPressed;
-        _quitButton.Pressed += OnQuitPressed;
+        _startButton.Pressed += () => GetTree().ChangeSceneToFile("res://Scenes/Main.tscn");
+        _settingsButton.Pressed += OpenSettings;
+        _quitButton.Pressed += () => GetTree().Quit();
     }
-
-    private void OnStartPressed() => GetTree().ChangeSceneToFile("res://Scenes/Main.tscn");
-    private void OnSettingsPressed() => GetTree().ChangeSceneToFile("res://Scenes/Settings.tscn");
-    private void OnQuitPressed() => GetTree().Quit();
+    private void OpenSettings()
+    {
+        var app = GetNode<AppState>("/root/AppState");
+        app.ReturnScenePath = "res://Scenes/MainMenu.tscn";
+        GetTree().ChangeSceneToFile("res://Scenes/Settings.tscn");
+    }
 }

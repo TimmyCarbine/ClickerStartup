@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://h4sc1spmei8p"]
+[gd_scene load_steps=4 format=3 uid="uid://h4sc1spmei8p"]
 
 [ext_resource type="Script" uid="uid://bqmsshf15v3cv" path="res://Scripts/Game.cs" id="1_r150o"]
+[ext_resource type="Texture2D" uid="uid://cghbq33bwopav" path="res://Art/Icons/UI/Settings_Normal.png" id="2_idj7w"]
 
 [sub_resource type="Theme" id="Theme_r150o"]
 
@@ -77,6 +78,10 @@ custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 horizontal_alignment = 2
+
+[node name="SettingsButton" type="TextureButton" parent="RootMargin/RootVBox/HUDRoot/HUD/CurrencyHUD"]
+layout_mode = 2
+texture_normal = ExtResource("2_idj7w")
 
 [node name="BodyHBox" type="HBoxContainer" parent="RootMargin/RootVBox"]
 custom_minimum_size = Vector2(0, 300)

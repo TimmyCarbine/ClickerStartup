@@ -1,8 +1,15 @@
 using System;
+using System.Diagnostics.Contracts;
 
 public static class NumberFormatter
 {
-    public static string Format(double n)
+    public enum Mode { Short, Scientific }
+    public static Mode CurrentMode { get; set; } = Mode.Short;
+
+    public static string Format(double v) => CurrentMode == Mode.Scientific ? FormatSci(v) : FormatShort(v);
+    public static string FormatPercent(double v) => CurrentMode == Mode.Scientific ? FormatSciPercent(v) : FormatPercent(v);
+
+    public static string FormatShort(double n)
     {
         // Whole numbers up to 999
         if (Math.Abs(n) < 1_000d) return n.ToString("0");
@@ -33,22 +40,33 @@ public static class NumberFormatter
         // Duodecillions +
         return (n / 1_000_000_000_000_000_000_000_000_000_000_000_000_000d).ToString("0.#") + " DDc";
     }
-    public static string FormatPercent(double value)
+    public static string FormatShortPercent(double value)
     {
-        if (double.IsNaN(value)) return "0%";
-        if (value < 1000) return $"{value:0}%";
-        if (value < 1_000_000) return $"{value / 1_000:0.##} K%";
-        if (value < 1_000_000_000) return $"{value / 1_000_000:0.##} M%";
-        if (value < 1_000_000_000_000) return $"{value / 1_000_000_000:0.##} B%";
-        if (value < 1_000_000_000_000_000d) return $"{value / 1_000_000_000_000:0.##} T%";
-        if (value < 1_000_000_000_000_000_000d) return $"{value / 1_000_000_000_000_000d:0.##} Qa%";
-        if (value < 1_000_000_000_000_000_000_000d) return $"{value / 1_000_000_000_000_000_000d:0.##} Qi%";
-        if (value < 1_000_000_000_000_000_000_000_000d) return $"{value / 1_000_000_000_000_000_000_000d:0.##} Sx%";
-        if (value < 1_000_000_000_000_000_000_000_000_000d) return $"{value / 1_000_000_000_000_000_000_000_000d:0.##} Sp%";
-        if (value < 1_000_000_000_000_000_000_000_000_000_000d) return $"{value / 1_000_000_000_000_000_000_000_000_000d:0.##} Oc%";
-        if (value < 1_000_000_000_000_000_000_000_000_000_000_000d) return $"{value / 1_000_000_000_000_000_000_000_000_000_000d:0.##} No%";
-        if (value < 1_000_000_000_000_000_000_000_000_000_000_000_000d) return $"{value / 1_000_000_000_000_000_000_000_000_000_000_000d:0.##} Dc%";
-        if (value < 1_000_000_000_000_000_000_000_000_000_000_000_000_000d) return $"{value / 1_000_000_000_000_000_000_000_000_000_000_000_000d:0.##} UDc%";
-        return $"{value / 1_000_000_000_000_000_000_000_000_000_000_000_000_000d:0.##} DDc%";
+        if (double.IsNaN(value)) return "0 %";
+        if (value < 1000) return $"{value:0} %";
+        if (value < 1_000_000) return $"{value / 1_000:0.##} K %";
+        if (value < 1_000_000_000) return $"{value / 1_000_000:0.##} M %";
+        if (value < 1_000_000_000_000) return $"{value / 1_000_000_000:0.##} B %";
+        if (value < 1_000_000_000_000_000d) return $"{value / 1_000_000_000_000:0.##} T %";
+        if (value < 1_000_000_000_000_000_000d) return $"{value / 1_000_000_000_000_000d:0.##} Qa %";
+        if (value < 1_000_000_000_000_000_000_000d) return $"{value / 1_000_000_000_000_000_000d:0.##} Qi %";
+        if (value < 1_000_000_000_000_000_000_000_000d) return $"{value / 1_000_000_000_000_000_000_000d:0.##} Sx %";
+        if (value < 1_000_000_000_000_000_000_000_000_000d) return $"{value / 1_000_000_000_000_000_000_000_000d:0.##} Sp %";
+        if (value < 1_000_000_000_000_000_000_000_000_000_000d) return $"{value / 1_000_000_000_000_000_000_000_000_000d:0.##} Oc %";
+        if (value < 1_000_000_000_000_000_000_000_000_000_000_000d) return $"{value / 1_000_000_000_000_000_000_000_000_000_000d:0.##} No %";
+        if (value < 1_000_000_000_000_000_000_000_000_000_000_000_000d) return $"{value / 1_000_000_000_000_000_000_000_000_000_000_000d:0.##} Dc %";
+        if (value < 1_000_000_000_000_000_000_000_000_000_000_000_000_000d) return $"{value / 1_000_000_000_000_000_000_000_000_000_000_000_000d:0.##} UDc %";
+        return $"{value / 1_000_000_000_000_000_000_000_000_000_000_000_000_000d:0.##} DDc %";
     }
+    private static string FormatSci(double v)
+    {
+        if (Math.Abs(v) < 1000) return v.ToString("0.##");
+        return v.ToString("0.###e+0");
+    }
+    private static string FormatSciPercent(double value)
+    {
+        if (value < 1000) return $"{value:0} %";
+        return value.ToString("0.###e+0 %");
+    }
+
 }

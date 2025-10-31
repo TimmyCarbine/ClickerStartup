@@ -1,0 +1,91 @@
+[gd_scene load_steps=2 format=3 uid="uid://5y8sibepmrlg"]
+
+[ext_resource type="Script" uid="uid://clsqaao042udo" path="res://Scripts/Settings.cs" id="1_4hxq3"]
+
+[node name="Root" type="PanelContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_4hxq3")
+
+[node name="MainVB" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Title" type="Label" parent="MainVB"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = "Settings"
+horizontal_alignment = 1
+
+[node name="SettingsVB" type="VBoxContainer" parent="MainVB"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 20
+
+[node name="NumberFormatHB" type="HBoxContainer" parent="MainVB/SettingsVB"]
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="NumberFormatOptionLabel" type="Label" parent="MainVB/SettingsVB/NumberFormatHB"]
+layout_mode = 2
+text = "Number Format"
+
+[node name="NumberFormatOptionButton" type="OptionButton" parent="MainVB/SettingsVB/NumberFormatHB"]
+layout_mode = 2
+size_flags_vertical = 4
+selected = 0
+allow_reselect = true
+item_count = 2
+popup/item_0/text = "Short"
+popup/item_0/id = 0
+popup/item_1/text = "Scientific"
+popup/item_1/id = 1
+
+[node name="AutosaveHB" type="HBoxContainer" parent="MainVB/SettingsVB"]
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="AutosaveOptionLabel" type="Label" parent="MainVB/SettingsVB/AutosaveHB"]
+layout_mode = 2
+text = "Autosave"
+
+[node name="AutosaveOptionCheckButton" type="CheckButton" parent="MainVB/SettingsVB/AutosaveHB"]
+layout_mode = 2
+size_flags_vertical = 4
+button_pressed = true
+
+[node name="AutosaveOptionLineEdit" type="LineEdit" parent="MainVB/SettingsVB/AutosaveHB"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+theme_override_constants/minimum_character_width = 3
+text = "30"
+max_length = 4
+context_menu_enabled = false
+emoji_menu_enabled = false
+drag_and_drop_selection_enabled = false
+
+[node name="AutosaveUnitLabel" type="Label" parent="MainVB/SettingsVB/AutosaveHB"]
+layout_mode = 2
+text = "sec"
+
+[node name="NavigationBar" type="HBoxContainer" parent="MainVB"]
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 2
+
+[node name="ApplyButton" type="Button" parent="MainVB/NavigationBar"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+disabled = true
+text = "Apply"
+
+[node name="BackButton" type="Button" parent="MainVB/NavigationBar"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+text = "Back"
