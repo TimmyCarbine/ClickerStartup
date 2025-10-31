@@ -134,6 +134,7 @@ public class CurrencyManager
     {
         ResetRunButKeepPrestige();
         InvestorCapital = 0.0;
+        MaxMoneyEarned = 0.0;
     }
 
     public void RebuildStatsFrom(IEnumerable<Upgrade> upgrades)

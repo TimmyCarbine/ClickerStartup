@@ -84,7 +84,10 @@ public partial class Settings : Control
         if (_dirty) GD.Print("[Settings] Unsaved changes discarded");
 
         var path = _app.ReturnScenePath;
-        if (!string.IsNullOrEmpty(path)) path = "res://Scenes/Main.tscn";
+        GD.Print($"[Settings] Will return to {path}");
+        if (string.IsNullOrEmpty(path)) path = "res://Scenes/Main.tscn";
+
+        _app.ReturnScenePath = null;
         var tree = GetTree();
         if(tree != null) tree.ChangeSceneToFile(path);
     }
