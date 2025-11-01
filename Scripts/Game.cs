@@ -2,6 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime;
 using Label = Godot.Label;
 
 public partial class Game : Control
@@ -166,21 +167,18 @@ public partial class Game : Control
 
     private void OnPassiveTick()
     {
-        // Called once per second by the timer
         _cm.ApplyPassiveTick(1.0);
         RefreshHud();
-        GD.Print($"Click Flat: {_cm.ClickFlat}"); // PLACEHOLDER
-        GD.Print($"Click Mult: {_cm.ClickMult}"); // PLACEHOLDER
-        GD.Print($"Income Flat: {_cm.IncomeFlat}"); // PLACEHOLDER
-        GD.Print($"Income Mult: {_cm.IncomeMult}"); // PLACEHOLDER
     }
 
     private void OnPrestigePressed()
     {
         long preview = _cm.PreviewInvestorGain();
         string msg = preview > 0
-            ? $"You will gain +{NumberFormatter.Format(preview)} Investor Capital (+{NumberFormatter.FormatPercent(preview * 5)} global). \nProceed?"
-            : $"You need to exceed your record (${NumberFormatter.Format(_cm.MaxMoneyEarned)}) by $10,000.\nNext target: ${NumberFormatter.Format(_cm.NextIcTargetMoney)}";
+            ? $"You will gain +{NumberFormatter.Format(preview)} Investor Capital" +
+              $"(+{NumberFormatter.FormatPercent(preview * CurrencyManager.PCT_PER_IC)} global). \nProceed?"
+            : $"You need to exceed your record (${NumberFormatter.Format(_cm.MaxMoneyEarned)}) by $10,000.\n" +
+              $"Next target: ${NumberFormatter.Format(_cm.NextIcTargetMoney)}";
         _prestigeConfirmDialog.DialogText = msg;
         _prestigeConfirmDialog.Show();
     }
@@ -201,26 +199,15 @@ public partial class Game : Control
 
         _prestigeSummaryDialog.DialogText =
             $"Sold your startup! \nGained +{NumberFormatter.Format(gained)} Investor Capital. \n" +
-            $"Global bonus is now (+{NumberFormatter.FormatPercent((_cm.GlobalMult - 1) * 100)})";
+            $"Global bonus is now (+{NumberFormatter.FormatPercent(_cm.GlobalBonusPercentPoints)})";
         _prestigeSummaryDialog.Show();
 
         GD.Print($"[Prestige] Gained {gained} capital. Total: {_cm.InvestorCapital} (Global Multiplier: {_cm.GlobalMult:0.00}x)");
     }
 
-    private void OnAutosave()
-    {
-        SaveService.SaveAll(SAVE_PATH, _cm, _um);
-    }
-
-    private string FormatUpgradeCount(Upgrade u)
-    {
-        return u.Limit >= 0 ? $"{u.Purchases}/{u.Limit}" : $"{u.Purchases}/∞";
-    }
-
-    private string FormatUpgradeCost(double cost)
-    {
-        return $"${NumberFormatter.Format(cost)}";
-    }
+    private void OnAutosave() => SaveService.SaveAll(SAVE_PATH, _cm, _um);
+    private string FormatUpgradeCount(Upgrade u) => u.Limit >= 0 ? $"{u.Purchases}/{u.Limit}" : $"{u.Purchases}/∞";
+    private string FormatUpgradeCost(double cost) => $"${NumberFormatter.Format(cost)}";
 
     private void UpdateUpgradeButton(Button btn, Upgrade u)
     {
@@ -270,25 +257,42 @@ public partial class Game : Control
         _locLabel.Text = $"LoC: {NumberFormatter.Format(_cm.LinesOfCode)}";
         _incomeLabel.Text = $"Income/sec: {NumberFormatter.Format(_cm.CurrentIncomePerSec)}";
 
-        // Update upgrade button text & enable/disable state
-        foreach (var (btn, u) in _buttonToUpgrade)
-            UpdateUpgradeButton(btn, u);
+        foreach (var (btn, u) in _buttonToUpgrade) UpdateUpgradeButton(btn, u);
 
-        // Update prestige button text & enable/disable
         long preview = _cm.PreviewInvestorGain();
-        _prestigeButton.Disabled = preview <= 0;
-        _prestigeButton.Text = preview > 0
-            ? $"Sell Company (+{NumberFormatter.Format(preview)} Investor Capital)"
-            : $"Sell Company (Next: {NumberFormatter.Format(_cm.NextIcTargetMoney)})";
 
-        _investorLabel.Text = $"IC: {NumberFormatter.Format(_cm.InvestorCapital)} (+{NumberFormatter.FormatPercent((_cm.GlobalMult - 1) * 100)})";
+        // First IC target is always "record + 10k"
+        double firstTarget = _cm.MaxMoneyEarned + 10_000.0;
 
-        double excess = Math.Max(0.0, _cm.Money - _cm.MaxMoneyEarned);
-        double denom = _cm.NextIcTargetMoney - _cm.MaxMoneyEarned;
-        double pct = 0.0;
-        if (!double.IsInfinity(_cm.NextIcTargetMoney) && denom > 0)
-            pct = Math.Clamp(excess / denom, 0.0, 1.0);
+        // Keep the bar pegged once you can earn IC
+        double pct;
+        if (preview > 0)
+        {
+            pct = 1.0;
+        }
+        else
+        {
+            // ⇨ Scale from 0 → firstTarget (ignore previous max in the ratio)
+            pct = (firstTarget > 0 && !double.IsInfinity(firstTarget))
+                ? Math.Clamp(_cm.Money / firstTarget, 0.0, 1.0)
+                : 0.0;
+        }
         _prestigeProgressBar.Value = pct;
+
+        // For the "Next:" text you can still show the next milestone after you qualify
+        double nextForText = (preview <= 0) ? firstTarget : _cm.NextIcTargetMoney;
+
+        // Gate on eligibility (≥1 IC)
+        bool canPrestige = preview > 0;
+        _prestigeButton.Disabled = !canPrestige;
+
+        _prestigeButton.Text = canPrestige
+            ? $"Sell Company (+{NumberFormatter.Format(preview)} Investor Capital)"
+            : $"Sell Company (Next: {NumberFormatter.Format(nextForText)})";
+
+        _investorLabel.Text =
+            $"IC: {NumberFormatter.Format(_cm.InvestorCapital)} " +
+            $"(+{NumberFormatter.FormatPercent(_cm.GlobalBonusPercentPoints)})";
     }
 
     public override void _UnhandledInput(InputEvent @event)
